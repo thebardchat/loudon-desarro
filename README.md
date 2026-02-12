@@ -1,65 +1,180 @@
-# Louden / Desaro Gymnasium
+# ShaneBrain Core
 
-### Hazel Green, Alabama
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?style=for-the-badge&logo=github-sponsors)](https://github.com/sponsors/thebardchat)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20Me-ff5f5f?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/shanebrain)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?style=for-the-badge&logo=discord)](https://discord.gg/your-invite-link)
 
-**Interactive 3D Investor Presentation — Transformable NCAA Wrestling Arena & Elite Training Complex**
+> **The Foundation of the ShaneBrain AI Ecosystem**  
+> Local-first AI infrastructure powering Angel Cloud, Pulsar AI, and the ShaneBrain digital legacy system.
 
----
-
-## 🏟️ Live Presentation
-
-### **➡️ [View The 3D Walkthrough](https://thebardchat.github.io/loudon-desarro/)**
-
-*Click "Explore The Facility" → use camera views to tour the building → toggle between Training Mode and NCAA Arena Mode*
+![ShaneBrain](https://raw.githubusercontent.com/thebardchat/shanebrain-core/main/.github/assets/shanebrain-avatar.png)
 
 ---
 
-## Facility Specifications
+## 🚀 Current Status
 
-| Feature | Details |
-|---------|---------|
-| **Total Area** | 10,000 SF |
-| **Building** | Elliptical steel-rib structure, 100' × 100', 22' peak |
-| **Wrestling** | 3 NCAA regulation 42'×42' competition mats |
-| **Arena Mode** | Transformable single-mat configuration with retractable bleachers (3 sides), hanging scoreboard |
-| **Indoor Turf** | 40-yard sprint & agility strip |
-| **S&C Zone** | Power racks, platforms, dumbbell racks, cable machines |
-| **Glass Walls** | Full-height glass garage doors (east wall) — raise for open-air training |
-| **Office** | Glass-partition viewing area overlooking mat area |
+| Component | Status |
+|-----------|--------|
+| Discord Bot | ✅ ONLINE |
+| Angel Arcade | ✅ ONLINE |
+| Two-Computer Cluster | ✅ OPERATIONAL |
+| Weaviate RAG | ✅ CONNECTED |
+| Learning System | ✅ WORKING |
 
-## 3D Presentation Features
+**Built on 7.4GB RAM.** Proof that you don't need expensive hardware to build the future.
 
-- **7 Camera Views:** Exterior, Mat Area, Turf Zone, S&C / Glass Walls, Office, Aerial, Cinematic Auto Tour
-- **Training ↔ Arena Toggle:** Switch between 3-mat training layout and NCAA competition arena with retractable bleachers
-- **Interactive Controls:** Click-drag orbit, scroll zoom, touch-friendly for phone/tablet investor demos
-- **Gold Accent Branding:** Steel ribs with gold caps, glass garage door frames, center mat circles
+---
 
-## Technology
+## 🎯 Mission
 
-Built with [Three.js](https://threejs.org/) (r128) — runs entirely in-browser, no install required. Optimized for mobile presentations.
+Transform technology from exploitative to uplifting. Build AI systems that serve humanity, respect privacy, and empower individuals—starting with **800 million Windows users losing security updates.**
 
-## File Structure
+**Core Values:**
+- 🔓 Open source first
+- 🏠 Local-first architecture (your data, your hardware)
+- 👨‍👩‍👧‍👦 Family-first priorities
+- 🚀 ADHD as superpower
+- 💪 Accessibility for all
+
+---
+
+## 💖 Support This Project
+
+I'm a dump truck dispatcher by day, self-taught developer by night. Father of 5 sons. 2+ years sober. Building this on limited hardware while working full-time.
+
+**Every sponsor helps keep the lights on while I code the future.**
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-💖-pink?style=for-the-badge)](https://github.com/sponsors/thebardchat)
+[![Support on Ko-fi](https://img.shields.io/badge/Buy_me_a_coffee-☕-yellow?style=for-the-badge)](https://ko-fi.com/shanebrain)
+
+| Tier | Price | What You Get |
+|------|-------|--------------|
+| ☕ Coffee Fuel | $3/mo | Name in README + gratitude |
+| 🧠 Brain Builder | $10/mo | Early access to releases |
+| ⚡ Power Supporter | $25/mo | Private Discord channel |
+| 🚀 Legacy Partner | $50/mo | Monthly 1-on-1 video call |
+
+---
+
+## 📦 What's Inside
+
+### 🧠 ShaneBrain Bot
+Discord bot with RAG-powered memory. Knows my family, my values, learns from every conversation.
+
+### 🎰 Angel Arcade
+Revenue-generating Discord casino bot with premium features via Ko-fi integration.
+
+### ⚡ Two-Computer Cluster
+Load-balanced Ollama setup across two machines. Proof you can build enterprise architecture on consumer hardware.
+
+### 🗄️ Weaviate RAG
+Local vector database for semantic search and memory. No cloud dependency.
+
+---
+
+## 🏗️ Architecture
 
 ```
-├── index.html          ← THE presentation (open this)
-├── archive/            ← Previous iterations and concepts
-│   ├── BenGino_Wrestling_Complex_3D.html
-│   ├── LoudenDesaro_LITE.html
-│   ├── LoudenDesaro_PlexFlex.html
-│   ├── LoudonDeSarro_PlexFlex_Cinematic.html
-│   └── ...
-├── freecad/            ← FreeCAD modular model files
-│   └── LoudenDesaro_FreeCAD.tar.gz
-├── assets/             ← Concept images
-│   ├── retractable lightweight concrete.png
-│   └── retractable lightweight concrete.svg
-└── wrestling_facility_phase1.py  ← FreeCAD Python script
+┌─────────────────┐
+│  Discord User   │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│  ShaneBrain Bot │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│  Load Balancer  │
+│  :8000          │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    │         │
+┌───▼───┐ ┌───▼───┐
+│ PC A  │ │ PC B  │
+│Primary│ │Backup │
+└───────┘ └───────┘
+```
+
+**Philosophy:** Local first, cloud backup. Everything runs offline.
+
+---
+
+## 🚀 Quick Start
+
+```batch
+# Clone
+git clone https://github.com/thebardchat/shanebrain-core.git
+cd shanebrain-core
+
+# Start Computer B first (if using cluster)
+# Then on Computer A:
+START-SHANEBRAIN.bat
 ```
 
 ---
 
-**Louden / Desaro Gymnasium** — Built for Northern Alabama's next generation of champions.
+## 🔧 Projects in the Ecosystem
 
-*Project by Shane Brazelton · Meridianville, Alabama*
+| Project | Purpose | Status |
+|---------|---------|--------|
+| **ShaneBrain** | Personal AI legacy system | ✅ Active |
+| **Angel Cloud** | Mental wellness platform | 🔨 Building |
+| **Pulsar AI** | Quantum-safe security | 📋 Planned |
+| **TheirNameBrain** | AI legacy for everyone | 🔮 Vision |
 
-**Live Presentation:** [View Here](https://thebardchat.github.io/loudon-desarro/)# loudon-desarro
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| AI Models | Ollama + llama3.2 |
+| Vector DB | Weaviate |
+| Bot Framework | discord.py |
+| Load Balancer | Custom Python |
+| Database | SQLite |
+| Deployment | Docker + Batch |
+
+---
+
+## 👨‍💻 About the Builder
+
+**Shane Brazelton** - Alabama dump truck dispatcher turned AI developer.
+
+- 👨‍👩‍👦‍👦 Father of 5 sons
+- 💪 2+ years sober
+- 🧠 ADHD as superpower
+- 🎯 Mission: 800 million users deserve better
+
+**"If you don't own your infrastructure, you don't own your future."**
+
+---
+
+## 🤝 Sponsors
+
+<!-- sponsors -->
+*Become the first sponsor!*
+<!-- sponsors -->
+
+---
+
+## 📄 License
+
+MIT License - Use freely, build your own legacy.
+
+---
+
+## ⭐ Star History
+
+If this project helps you, star it! Every star helps others find it.
+
+---
+
+**Built with love in Alabama 🏈**  
+**For my family. For the 800 million. For everyone who deserves better technology.**
+
+---
+
+*"The best way to predict the future is to build it."*  
+*— Shane Brazelton, 2026*
