@@ -42,6 +42,18 @@ ROOF_PITCH  = 3             # 3:12 pitch (standard metal building)
 SLAB_THICK  = 6 * IN       # 6 inch reinforced concrete slab
 SLAB_DEPTH  = SLAB_THICK   # Below grade depth
 
+# ---- Telescopic Beam System (PLEX FLEX™) ----
+TELE_ROWS         = 16              # 16 rows of elevating beams
+TELE_EXTRA_SEATS  = 2600            # Extra spectator capacity
+TELE_STOW_Z       = -24 * FT       # Stowed position (below slab)
+TELE_DEPLOY_Z     =  42 * FT       # Fully deployed position
+TELE_BEAM_HEIGHT  =  4 * FT        # Height of each beam/row
+TELE_HORIZ_STEP   =  4 * FT        # Horizontal step between rows
+TELE_PIT_DEPTH    =  26 * FT       # Pit depth below grade (24' beams + 2' clearance)
+TELE_PIT_LENGTH   =  76 * FT       # Pit length (spans mat area width)
+TELE_PIT_WIDTH    =  12 * FT       # Pit width at each end
+TELE_FLAP_THICK   =   4 * IN       # Safety flap cover thickness
+
 # Walls
 EXT_WALL_THICK = 6 * IN    # Metal panel wall thickness
 INT_WALL_THICK = 4 * IN    # Interior partition thickness
@@ -78,6 +90,9 @@ COLOR_WEIGHT    = (0.40, 0.40, 0.45)   # Dark gray
 COLOR_LOCKER    = (0.70, 0.80, 0.90)   # Light blue
 COLOR_OFFICE    = (0.90, 0.85, 0.70)   # Warm beige
 COLOR_ROOF      = (0.55, 0.55, 0.55)   # Metal roof gray
+COLOR_BEAM      = (0.82, 0.80, 0.76)  # Concrete beam (light gray)
+COLOR_PIT       = (0.35, 0.35, 0.35)  # Pit interior (dark)
+COLOR_FLAP      = (0.65, 0.65, 0.60)  # Safety flap (steel gray)
 
 # ============================================================================
 # CREATE DOCUMENT
@@ -339,7 +354,66 @@ make_box("Door_Emergency_East", EXT_WALL_THICK + 100, MAN_DOOR_W, MAN_DOOR_H,
          color=(0.80, 0.10, 0.10))
 
 # ============================================================================
-# 10. LABELS (Text annotations for rooms)
+# 10. TELESCOPIC BEAM SYSTEM — PLEX FLEX™
+# ============================================================================
+# The 6" slab is modified with deep pits at the North and South ends to house
+# the telescopic beams.  16 rows of beams rise from the floor (Z = -24' stowed
+# to Z = +42' fully deployed) to seat 2,600 additional spectators.
+# Automated safety flaps cover the floor gaps when the bleachers ascend.
+
+mat_area_width_val = divider_x - EXT_WALL_THICK  # Usable mat-area width
+
+# ---- 10a. Deep Pits (North & South) ----
+# North pit — sits against the inside of the north wall
+pit_north_y = BLDG_WIDTH - EXT_WALL_THICK - TELE_PIT_WIDTH
+make_box("Pit_North", TELE_PIT_LENGTH, TELE_PIT_WIDTH, TELE_PIT_DEPTH,
+         x=EXT_WALL_THICK, y=pit_north_y, z=-TELE_PIT_DEPTH,
+         color=COLOR_PIT)
+
+# South pit — sits against the inside of the south wall
+pit_south_y = EXT_WALL_THICK
+make_box("Pit_South", TELE_PIT_LENGTH, TELE_PIT_WIDTH, TELE_PIT_DEPTH,
+         x=EXT_WALL_THICK, y=pit_south_y, z=-TELE_PIT_DEPTH,
+         color=COLOR_PIT)
+
+# ---- 10b. Elevating Beams (stowed position: Z = -24') ----
+beam_length = TELE_PIT_LENGTH       # Each beam spans the pit length
+beam_width  = TELE_PIT_WIDTH / TELE_ROWS * 3   # Width per beam section
+
+for end_tag, pit_y in [("North", pit_north_y), ("South", pit_south_y)]:
+    count = 1 if end_tag == "North" else -1
+    for r in range(TELE_ROWS):
+        elevation = r * TELE_BEAM_HEIGHT
+        horizontal_step = (TELE_ROWS - 1 - r) * TELE_HORIZ_STEP * count
+
+        beam = doc.addObject("Part::Box", f"ElevatingBeam_{end_tag}_Row_{r}")
+        beam.Length = beam_length
+        beam.Width  = beam_width
+        beam.Height = TELE_BEAM_HEIGHT * 0.9  # Slight gap between rows
+        beam.Placement = App.Placement(
+            App.Vector(
+                EXT_WALL_THICK,
+                pit_y - horizontal_step,
+                TELE_STOW_Z + elevation
+            ),
+            App.Rotation()
+        )
+        beam.ViewObject.ShapeColor = COLOR_BEAM
+
+# ---- 10c. Safety Interlock Flaps ----
+# Automated steel flaps cover the floor openings when beams are deployed.
+# One flap per pit, hinged at the pit edge (modeled flat / closed position).
+
+make_box("SafetyFlap_North", TELE_PIT_LENGTH, TELE_PIT_WIDTH, TELE_FLAP_THICK,
+         x=EXT_WALL_THICK, y=pit_north_y, z=-TELE_FLAP_THICK,
+         color=COLOR_FLAP)
+
+make_box("SafetyFlap_South", TELE_PIT_LENGTH, TELE_PIT_WIDTH, TELE_FLAP_THICK,
+         x=EXT_WALL_THICK, y=pit_south_y, z=-TELE_FLAP_THICK,
+         color=COLOR_FLAP)
+
+# ============================================================================
+# 11. LABELS (Text annotations for rooms)
 # ============================================================================
 
 labels = [
@@ -351,13 +425,15 @@ labels = [
     ("Label_LockerW", "WOMEN'S\nLOCKER", divider_x + SUPPORT_DEPTH/2, OFFICE_WIDTH + LOCKER_M_WIDTH + LOCKER_W_WIDTH/2),
     ("Label_Weight", "WEIGHT ROOM", divider_x + SUPPORT_DEPTH/2, OFFICE_WIDTH + LOCKER_M_WIDTH + LOCKER_W_WIDTH + WEIGHT_WIDTH/2),
     ("Label_Mech", "MECH /\nSTORAGE", divider_x + SUPPORT_DEPTH/2, mech_y + mech_height/2),
+    ("Label_Pit_North", "TELESCOPIC PIT\n(NORTH)", TELE_PIT_LENGTH/2 + EXT_WALL_THICK, pit_north_y + TELE_PIT_WIDTH/2),
+    ("Label_Pit_South", "TELESCOPIC PIT\n(SOUTH)", TELE_PIT_LENGTH/2 + EXT_WALL_THICK, pit_south_y + TELE_PIT_WIDTH/2),
 ]
 
 for name, text, x, y in labels:
     make_text_label(name, text, x, y, z=500)
 
 # ============================================================================
-# 11. RECOMPUTE AND FIT VIEW
+# 12. RECOMPUTE AND FIT VIEW
 # ============================================================================
 
 doc.recompute()
@@ -394,6 +470,14 @@ print(f"  - Men's Lock: {SUPPORT_DEPTH/FT:.0f}' x {LOCKER_M_WIDTH/FT:.0f}'")
 print(f"  - Women Lock: {SUPPORT_DEPTH/FT:.0f}' x {LOCKER_W_WIDTH/FT:.0f}'")
 print(f"  - Weight Rm:  {SUPPORT_DEPTH/FT:.0f}' x {WEIGHT_WIDTH/FT:.0f}'")
 print(f"  - Mechanical: {SUPPORT_DEPTH/FT:.0f}' x {mech_height/FT:.0f}'")
+print(f"")
+print(f"  PLEX FLEX™ TELESCOPIC BEAMS:")
+print(f"  - Rows:       {TELE_ROWS}")
+print(f"  - Capacity:   {TELE_EXTRA_SEATS:,} extra spectators")
+print(f"  - Stowed Z:   {TELE_STOW_Z/FT:.0f}' (below slab)")
+print(f"  - Deployed Z: {TELE_DEPLOY_Z/FT:.0f}' (above floor)")
+print(f"  - Pit Depth:  {TELE_PIT_DEPTH/FT:.0f}' below grade")
+print(f"  - Safety:     Automated interlock flaps ({TELE_FLAP_THICK/IN:.0f}\" steel)")
 print(f"")
 print(f"  CONTRACTORS:")
 print(f"  - Metal Bldg: Summer Time Metals")
