@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ben & Gino Wrestling — Phase 1 Training Complex</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Barlow', sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #canvas-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+
+  /* HERO OVERLAY */
+  #hero-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 100%);
+    transition: opacity 1.2s ease;
+    pointer-events: auto;
+  }
+
+  #hero-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #c8a45a;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(42px, 8vw, 96px);
+    line-height: 0.95;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: -1px;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .hero-title span {
+    display: block;
+    color: #c8a45a;
+    font-size: 0.45em;
+    font-weight: 400;
+    letter-spacing: 8px;
+    margin-top: 8px;
+  }
+
+  .hero-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: rgba(255,255,255,0.6);
+    margin-top: 24px;
+    text-align: center;
+    max-width: 600px;
+    line-height: 1.5;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 36px;
+    color: #c8a45a;
+  }
+
+  .stat-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+  }
+
+  .enter-btn {
+    margin-top: 48px;
+    padding: 16px 56px;
+    background: transparent;
+    border: 1px solid #c8a45a;
+    color: #c8a45a;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    opacity: 0;
+    animation: fadeUp 1s 1.5s forwards;
+  }
+
+  .enter-btn:hover {
+    background: #c8a45a;
+    color: #0a0a0a;
+    transform: scale(1.02);
+  }
+
+  /* HUD */
+  #hud {
+    position: fixed;
+    z-index: 5;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  #hud.visible { opacity: 1; }
+
+  .hud-top {
+    position: absolute;
+    top: 24px; left: 32px; right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .hud-logo {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .hud-logo span { color: #c8a45a; }
+
+  .hud-info {
+    text-align: right;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.8;
+  }
+
+  /* ROOM LABEL */
+  #room-label {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    transition: opacity 0.4s ease;
+  }
+
+  .room-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+  }
+
+  .room-dims {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: #c8a45a;
+    margin-top: 4px;
+  }
+
+  /* CAMERA BUTTONS */
+  .cam-controls {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .cam-btn {
+    padding: 10px 20px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(200,164,90,0.3);
+    color: rgba(255,255,255,0.7);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .cam-btn:hover, .cam-btn.active {
+    background: rgba(200,164,90,0.2);
+    border-color: #c8a45a;
+    color: #c8a45a;
+  }
+
+  /* SIDE PANEL */
+  .side-panel {
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: auto;
+  }
+
+  .side-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .side-dot:hover, .side-dot.active {
+    background: #c8a45a;
+    box-shadow: 0 0 12px rgba(200,164,90,0.5);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Grain overlay */
+  #grain {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 256px;
+  }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+<div id="grain"></div>
+
+<!-- HERO SCREEN -->
+<div id="hero-overlay">
+  <div class="hero-badge">Hazel Green, Alabama</div>
+  <h1 class="hero-title">
+    Ben & Gino<br>Wrestling
+    <span>Phase 1 Training Complex</span>
+  </h1>
+  <p class="hero-subtitle">
+    A 10,000 square foot state-of-the-art training facility designed to grow 
+    Northern Alabama's wrestling legacy — from youth development to championship contenders.
+  </p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-value">10,000</div>
+      <div class="stat-label">Square Feet</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Competition Mats</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">100×100</div>
+      <div class="stat-label">Foot Footprint</div>
+    </div>
+  </div>
+  <button class="enter-btn" onclick="enterExperience()">Explore The Facility →</button>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-top">
+    <div class="hud-logo">Ben & Gino <span>Wrestling</span></div>
+    <div class="hud-info">
+      Phase 1 Training Complex<br>
+      Hazel Green, Alabama<br>
+      10,000 SF Metal Building
+    </div>
+  </div>
+
+  <div id="room-label">
+    <div class="room-name" id="room-name">Exterior View</div>
+    <div class="room-dims" id="room-dims">100' × 100' Pre-Engineered Metal Building</div>
+  </div>
+
+  <div class="cam-controls">
+    <button class="cam-btn active" onclick="goToView(0)">Exterior</button>
+    <button class="cam-btn" onclick="goToView(1)">Mat Area</button>
+    <button class="cam-btn" onclick="goToView(2)">Weight Room</button>
+    <button class="cam-btn" onclick="goToView(3)">Office</button>
+    <button class="cam-btn" onclick="goToView(4)">Aerial</button>
+    <button class="cam-btn" onclick="goToView(5)">Auto Tour</button>
+  </div>
+
+  <div class="side-panel">
+    <div class="side-dot active" onclick="goToView(0)"></div>
+    <div class="side-dot" onclick="goToView(1)"></div>
+    <div class="side-dot" onclick="goToView(2)"></div>
+    <div class="side-dot" onclick="goToView(3)"></div>
+    <div class="side-dot" onclick="goToView(4)"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ============================================================
+// PHASE 1 WRESTLING TRAINING FACILITY — 3D INVESTOR PRESENTATION
+// Ben & Gino Wrestling Program — Hazel Green, Alabama
+// ============================================================
+
+const FT = 0.3048; // 1 foot in scene units (meters)
+
+// SCENE SETUP
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1117);
+scene.fog = new THREE.FogExp2(0x0d1117, 0.006);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.set(60, 30, 60);
+camera.lookAt(15, 0, 15);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+// LIGHTING
+const ambient = new THREE.AmbientLight(0x404060, 0.4);
+scene.add(ambient);
+
+const hemi = new THREE.HemisphereLight(0x87CEEB, 0x362d1a, 0.5);
+scene.add(hemi);
+
+const sun = new THREE.DirectionalLight(0xfff5e0, 1.8);
+sun.position.set(40, 50, 30);
+sun.castShadow = true;
+sun.shadow.mapSize.width = 2048;
+sun.shadow.mapSize.height = 2048;
+sun.shadow.camera.near = 1;
+sun.shadow.camera.far = 150;
+sun.shadow.camera.left = -60;
+sun.shadow.camera.right = 60;
+sun.shadow.camera.top = 60;
+sun.shadow.camera.bottom = -60;
+scene.add(sun);
+
+// Interior light (warm, for when camera goes inside)
+const interiorLight = new THREE.PointLight(0xffe8c0, 1.5, 40);
+interiorLight.position.set(12, 4, 15);
+scene.add(interiorLight);
+
+const interiorLight2 = new THREE.PointLight(0xffe8c0, 1.0, 30);
+interiorLight2.position.set(27, 4, 15);
+scene.add(interiorLight2);
+
+// Accent lights on mats
+const matLight1 = new THREE.SpotLight(0xffffff, 0.8, 20, Math.PI / 4);
+matLight1.position.set(8, 8, 8);
+matLight1.target.position.set(8, 0, 8);
+scene.add(matLight1);
+scene.add(matLight1.target);
+
+// ============================================================
+// MATERIALS
+// ============================================================
+
+const matConcrete = new THREE.MeshStandardMaterial({ 
+  color: 0x8a8a85, roughness: 0.9, metalness: 0.05 
+});
+
+const matMetal = new THREE.MeshStandardMaterial({ 
+  color: 0x3a4a5a, roughness: 0.4, metalness: 0.7 
+});
+
+const matMetalRoof = new THREE.MeshStandardMaterial({ 
+  color: 0x4a5a6a, roughness: 0.3, metalness: 0.8, side: THREE.DoubleSide 
+});
+
+const matWallInterior = new THREE.MeshStandardMaterial({ 
+  color: 0xe8e4dc, roughness: 0.8, metalness: 0.0 
+});
+
+const matWrestlingMat = new THREE.MeshStandardMaterial({ 
+  color: 0xb01020, roughness: 0.6, metalness: 0.0 
+});
+
+const matMatCircle = new THREE.MeshStandardMaterial({ 
+  color: 0xd4af37, roughness: 0.5, metalness: 0.1 
+});
+
+const matWeightFloor = new THREE.MeshStandardMaterial({ 
+  color: 0x2a2a2f, roughness: 0.85, metalness: 0.1 
+});
+
+const matOfficeFloor = new THREE.MeshStandardMaterial({ 
+  color: 0xc4a97d, roughness: 0.7, metalness: 0.0 
+});
+
+const matLockerFloor = new THREE.MeshStandardMaterial({ 
+  color: 0x6a8caa, roughness: 0.6, metalness: 0.1 
+});
+
+const matSteel = new THREE.MeshStandardMaterial({ 
+  color: 0x555555, roughness: 0.3, metalness: 0.9 
+});
+
+const matGlass = new THREE.MeshStandardMaterial({ 
+  color: 0x88ccee, roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0.3 
+});
+
+const matDoor = new THREE.MeshStandardMaterial({ 
+  color: 0xc8a45a, roughness: 0.5, metalness: 0.3 
+});
+
+const matGround = new THREE.MeshStandardMaterial({ 
+  color: 0x2d3a20, roughness: 1.0, metalness: 0.0 
+});
+
+const matParking = new THREE.MeshStandardMaterial({ 
+  color: 0x3a3a3a, roughness: 0.9, metalness: 0.0 
+});
+
+// ============================================================
+// GROUND & SURROUNDINGS
+// ============================================================
+
+// Ground plane
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(300, 300),
+  matGround
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.15;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Parking lot (south side)
+const parking = new THREE.Mesh(
+  new THREE.PlaneGeometry(35, 20),
+  matParking
+);
+parking.rotation.x = -Math.PI / 2;
+parking.position.set(15, -0.1, -12);
+parking.receiveShadow = true;
+scene.add(parking);
+
+// Parking stripes
+for (let i = 0; i < 10; i++) {
+  const stripe = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.15, 5),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
+  );
+  stripe.rotation.x = -Math.PI / 2;
+  stripe.position.set(i * 3.2 + 1, -0.08, -12);
+  scene.add(stripe);
+}
+
+// ============================================================
+// BUILDING DIMENSIONS (in meters via FT conversion)
+// ============================================================
+
+const BW = 100 * FT;  // Building width (x)
+const BL = 100 * FT;  // Building length (z)
+const BH = 18 * FT;   // Eave height
+const WALL_T = 6 * FT * 0.0254; // ~0.15m wall thickness
+const SUPPORT_D = 24 * FT; // Support room depth
+
+// ============================================================
+// SLAB
+// ============================================================
+
+const slab = new THREE.Mesh(
+  new THREE.BoxGeometry(BW + 1, 0.15, BL + 1),
+  matConcrete
+);
+slab.position.set(BW/2, -0.075, BL/2);
+slab.receiveShadow = true;
+scene.add(slab);
+
+// ============================================================
+// EXTERIOR WALLS (with cutouts implied by leaving gaps)
+// ============================================================
+
+function makeWall(w, h, d, x, y, z, mat) {
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  wall.position.set(x, y, z);
+  wall.castShadow = true;
+  wall.receiveShadow = true;
+  scene.add(wall);
+  return wall;
+}
+
+// South wall (front) - two sections with entrance gap
+makeWall(BW * 0.35, BH, WALL_T, BW * 0.175, BH/2, 0, matMetal);
+makeWall(BW * 0.55, BH, WALL_T, BW * 0.725, BH/2, 0, matMetal);
+
+// North wall (back)
+makeWall(BW, BH, WALL_T, BW/2, BH/2, BL, matMetal);
+
+// West wall
+makeWall(WALL_T, BH, BL, 0, BH/2, BL/2, matMetal);
+
+// East wall
+makeWall(WALL_T, BH, BL, BW, BH/2, BL/2, matMetal);
+
+// ============================================================
+// ROOF (Gable shape)
+// ============================================================
+
+const roofGeo = new THREE.BufferGeometry();
+const roofPeak = BH + (BL/2) * (3/12); // 3:12 pitch
+
+const roofVerts = new Float32Array([
+  // South face
+  0, BH, 0,
+  BW, BH, 0,
+  BW/1, roofPeak, BL/2,
+  0, BH, 0,
+  BW, roofPeak, BL/2,
+  0, roofPeak, BL/2,
+  // North face
+  0, BH, BL,
+  BW, roofPeak, BL/2,
+  BW, BH, BL,
+  0, BH, BL,
+  0, roofPeak, BL/2,
+  BW, roofPeak, BL/2,
+]);
+
+roofGeo.setAttribute('position', new THREE.BufferAttribute(roofVerts, 3));
+roofGeo.computeVertexNormals();
+
+const roof = new THREE.Mesh(roofGeo, matMetalRoof);
+roof.castShadow = true;
+scene.add(roof);
+
+// ============================================================
+// INTERIOR DIVIDER WALL (separates mat area from support rooms)
+// ============================================================
+
+const dividerX = BW - SUPPORT_D;
+makeWall(0.12, BH, BL, dividerX, BH/2, BL/2, matWallInterior);
+
+// ============================================================
+// SUPPORT ROOM DIVIDER WALLS
+// ============================================================
+
+const roomLayout = [
+  { name: "Office", depth: 20 * FT, color: matOfficeFloor },
+  { name: "Men's Locker", depth: 16 * FT, color: matLockerFloor },
+  { name: "Women's Locker", depth: 16 * FT, color: matLockerFloor },
+  { name: "Weight Room", depth: 24 * FT, color: matWeightFloor },
+  { name: "Mechanical", depth: 24 * FT, color: matWeightFloor },
+];
+
+let roomZ = 0;
+roomLayout.forEach((room, i) => {
+  // Floor coloring
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(SUPPORT_D - 0.2, room.depth - 0.1),
+    room.color
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(dividerX + SUPPORT_D/2, 0.01, roomZ + room.depth/2);
+  scene.add(floor);
+
+  roomZ += room.depth;
+
+  // Divider wall between rooms (except after last)
+  if (i < roomLayout.length - 1) {
+    makeWall(SUPPORT_D, 3.0, 0.1, dividerX + SUPPORT_D/2, 1.5, roomZ, matWallInterior);
+  }
+});
+
+// ============================================================
+// WRESTLING MATS (3 mats — 2 south + 1 north)
+// ============================================================
+
+const MAT_S = 42 * FT; // 42 foot mat
+const MAT_H = 0.06;    // 2 inch thick
+
+function createMat(x, z, label) {
+  // Mat base (red)
+  const mat = new THREE.Mesh(
+    new THREE.BoxGeometry(MAT_S, MAT_H, MAT_S),
+    matWrestlingMat
+  );
+  mat.position.set(x + MAT_S/2, MAT_H/2, z + MAT_S/2);
+  mat.receiveShadow = true;
+  scene.add(mat);
+
+  // Center circle (gold)
+  const circle = new THREE.Mesh(
+    new THREE.CylinderGeometry(3, 3, 0.01, 32),
+    matMatCircle
+  );
+  circle.position.set(x + MAT_S/2, MAT_H + 0.01, z + MAT_S/2);
+  scene.add(circle);
+
+  // Outer circle
+  const outerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(5, 0.08, 8, 32),
+    matMatCircle
+  );
+  outerRing.rotation.x = -Math.PI / 2;
+  outerRing.position.set(x + MAT_S/2, MAT_H + 0.01, z + MAT_S/2);
+  scene.add(outerRing);
+}
+
+const matStartX = 2 * FT;
+const matStartZ = 2 * FT;
+const matGap = 4 * FT;
+
+// Row 1: Two mats side by side
+createMat(matStartX, matStartZ, "Mat 1");
+createMat(matStartX, matStartZ + MAT_S + matGap, "Mat 2");
+
+// Row 2: One mat (warm-up / practice) offset
+const mat3X = matStartX + MAT_S + matGap;
+const mat3Z = (BL - MAT_S) / 2;
+createMat(mat3X, mat3Z, "Mat 3");
+
+// ============================================================
+// STEEL COLUMNS (Every 25 feet)
+// ============================================================
+
+for (let i = 0; i <= 4; i++) {
+  const z = i * 25 * FT;
+
+  // West column line
+  const col1 = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, BH, 0.2),
+    matSteel
+  );
+  col1.position.set(0.3, BH/2, z);
+  col1.castShadow = true;
+  scene.add(col1);
+
+  // Divider column line
+  const col2 = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, BH, 0.2),
+    matSteel
+  );
+  col2.position.set(dividerX, BH/2, z);
+  col2.castShadow = true;
+  scene.add(col2);
+
+  // East column line
+  const col3 = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, BH, 0.2),
+    matSteel
+  );
+  col3.position.set(BW - 0.3, BH/2, z);
+  col3.castShadow = true;
+  scene.add(col3);
+
+  // Roof trusses (connecting columns)
+  const truss = new THREE.Mesh(
+    new THREE.BoxGeometry(BW, 0.15, 0.15),
+    matSteel
+  );
+  truss.position.set(BW/2, BH - 0.2, z);
+  scene.add(truss);
+}
+
+// ============================================================
+// ENTRANCE DOOR (Gold accent)
+// ============================================================
+
+const doorFrame = new THREE.Mesh(
+  new THREE.BoxGeometry(2.5, 2.5, 0.2),
+  matDoor
+);
+doorFrame.position.set(BW * 0.42, 1.25, -0.05);
+scene.add(doorFrame);
+
+// Glass doors
+const glassDoor = new THREE.Mesh(
+  new THREE.BoxGeometry(2.2, 2.2, 0.05),
+  matGlass
+);
+glassDoor.position.set(BW * 0.42, 1.1, -0.08);
+scene.add(glassDoor);
+
+// Roll-up door (north wall)
+const rollup = new THREE.Mesh(
+  new THREE.BoxGeometry(3.7, 3.7, 0.15),
+  new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.3, metalness: 0.8 })
+);
+rollup.position.set(8, 1.85, BL + 0.05);
+scene.add(rollup);
+
+// ============================================================
+// GLASS VIEWING WINDOWS (Office / Parent viewing into mat area)
+// ============================================================
+
+const viewingGlass = new THREE.Mesh(
+  new THREE.BoxGeometry(0.05, 2.4, 18 * FT),
+  matGlass
+);
+viewingGlass.position.set(dividerX, 1.5, 10 * FT);
+scene.add(viewingGlass);
+
+// ============================================================
+// SIGNAGE (Building name on south wall)
+// ============================================================
+
+// Simple sign panel
+const signPanel = new THREE.Mesh(
+  new THREE.BoxGeometry(8, 1.5, 0.05),
+  new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.5 })
+);
+signPanel.position.set(BW * 0.42, BH * 0.75, -0.12);
+scene.add(signPanel);
+
+// Sign accent bar
+const signAccent = new THREE.Mesh(
+  new THREE.BoxGeometry(8.5, 0.05, 0.06),
+  new THREE.MeshStandardMaterial({ color: 0xc8a45a, metalness: 0.8, roughness: 0.2 })
+);
+signAccent.position.set(BW * 0.42, BH * 0.75 - 0.8, -0.13);
+scene.add(signAccent);
+
+// ============================================================
+// CAMERA VIEWS
+// ============================================================
+
+const views = [
+  { // 0: Exterior
+    pos: new THREE.Vector3(50, 12, -25),
+    target: new THREE.Vector3(15, 3, 15),
+    label: "Exterior View",
+    dims: "100' × 100' Pre-Engineered Metal Building"
+  },
+  { // 1: Mat Area
+    pos: new THREE.Vector3(12, 4, 5),
+    target: new THREE.Vector3(12, 1, 18),
+    label: "Competition Mat Area",
+    dims: "76' × 100' — Three 42' Wrestling Mats"
+  },
+  { // 2: Weight Room
+    pos: new THREE.Vector3(dividerX + 4, 2.5, 58 * FT),
+    target: new THREE.Vector3(dividerX + SUPPORT_D/2, 1, 62 * FT),
+    label: "Weight Room / Strength Training",
+    dims: "24' × 24' — Full Strength & Conditioning"
+  },
+  { // 3: Office
+    pos: new THREE.Vector3(dividerX + 4, 2.5, 8 * FT),
+    target: new THREE.Vector3(dividerX + SUPPORT_D/2, 1, 10 * FT),
+    label: "Office & Parent Viewing Area",
+    dims: "24' × 20' — Glass Wall Overlooking Mats"
+  },
+  { // 4: Aerial
+    pos: new THREE.Vector3(15, 55, 15),
+    target: new THREE.Vector3(15, 0, 15),
+    label: "Aerial Overview",
+    dims: "10,000 SF — Phase 1 Training Complex"
+  }
+];
+
+let currentView = 0;
+let autoTour = false;
+let autoTourTimer = null;
+let targetCamPos = views[0].pos.clone();
+let targetLookAt = views[0].target.clone();
+let currentLookAt = views[0].target.clone();
+
+// Camera orbit state
+let isOrbiting = false;
+let orbitAngle = 0;
+let mouseDown = false;
+let lastMouse = { x: 0, y: 0 };
+let orbitOffset = { theta: 0, phi: 0 };
+
+// ============================================================
+// CAMERA CONTROLS
+// ============================================================
+
+function goToView(index) {
+  if (index === 5) {
+    startAutoTour();
+    return;
+  }
+  stopAutoTour();
+  currentView = index;
+  targetCamPos = views[index].pos.clone();
+  targetLookAt = views[index].target.clone();
+
+  document.getElementById('room-name').textContent = views[index].label;
+  document.getElementById('room-dims').textContent = views[index].dims;
+
+  document.querySelectorAll('.cam-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.side-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+}
+
+function startAutoTour() {
+  autoTour = true;
+  let tourIndex = 0;
+
+  document.querySelectorAll('.cam-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === 5);
+  });
+
+  function nextView() {
+    goToView(tourIndex % 5);
+    autoTour = true; // Re-enable after goToView disables it
+    tourIndex++;
+    autoTourTimer = setTimeout(nextView, 5000);
+    document.querySelectorAll('.cam-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', i === 5);
+    });
+  }
+  nextView();
+}
+
+function stopAutoTour() {
+  autoTour = false;
+  if (autoTourTimer) clearTimeout(autoTourTimer);
+}
+
+// Mouse drag for orbit
+renderer.domElement.addEventListener('mousedown', (e) => {
+  mouseDown = true;
+  lastMouse = { x: e.clientX, y: e.clientY };
+  stopAutoTour();
+});
+
+renderer.domElement.addEventListener('mousemove', (e) => {
+  if (!mouseDown) return;
+  const dx = e.clientX - lastMouse.x;
+  const dy = e.clientY - lastMouse.y;
+  orbitOffset.theta += dx * 0.003;
+  orbitOffset.phi = Math.max(-0.5, Math.min(0.5, orbitOffset.phi + dy * 0.003));
+  lastMouse = { x: e.clientX, y: e.clientY };
+});
+
+renderer.domElement.addEventListener('mouseup', () => { mouseDown = false; });
+
+// Touch support
+renderer.domElement.addEventListener('touchstart', (e) => {
+  mouseDown = true;
+  lastMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  stopAutoTour();
+});
+
+renderer.domElement.addEventListener('touchmove', (e) => {
+  if (!mouseDown) return;
+  const dx = e.touches[0].clientX - lastMouse.x;
+  const dy = e.touches[0].clientY - lastMouse.y;
+  orbitOffset.theta += dx * 0.005;
+  orbitOffset.phi = Math.max(-0.5, Math.min(0.5, orbitOffset.phi + dy * 0.005));
+  lastMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  e.preventDefault();
+}, { passive: false });
+
+renderer.domElement.addEventListener('touchend', () => { mouseDown = false; });
+
+// Scroll to zoom
+renderer.domElement.addEventListener('wheel', (e) => {
+  const dir = camera.position.clone().sub(currentLookAt).normalize();
+  const zoom = e.deltaY * 0.02;
+  targetCamPos.add(dir.multiplyScalar(zoom));
+  stopAutoTour();
+});
+
+// ============================================================
+// ENTER EXPERIENCE
+// ============================================================
+
+function enterExperience() {
+  document.getElementById('hero-overlay').classList.add('hidden');
+  document.getElementById('hud').classList.add('visible');
+  goToView(0);
+}
+
+// ============================================================
+// ANIMATION LOOP
+// ============================================================
+
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+
+  // Smooth camera movement
+  const lerpSpeed = 1.8 * dt;
+
+  // Apply orbit offset to target position
+  let finalTarget = targetCamPos.clone();
+  if (orbitOffset.theta !== 0 || orbitOffset.phi !== 0) {
+    const offset = camera.position.clone().sub(currentLookAt);
+    const radius = offset.length();
+    const theta = Math.atan2(offset.x, offset.z) + orbitOffset.theta;
+    const phi = Math.max(0.1, Math.min(Math.PI/2 - 0.1, 
+      Math.acos(offset.y / radius) + orbitOffset.phi));
+
+    finalTarget.set(
+      currentLookAt.x + radius * Math.sin(phi) * Math.sin(theta),
+      currentLookAt.y + radius * Math.cos(phi),
+      currentLookAt.z + radius * Math.sin(phi) * Math.cos(theta)
+    );
+  }
+
+  camera.position.lerp(finalTarget, lerpSpeed);
+  currentLookAt.lerp(targetLookAt, lerpSpeed);
+  camera.lookAt(currentLookAt);
+
+  // Slowly decay orbit offset
+  orbitOffset.theta *= 0.95;
+  orbitOffset.phi *= 0.95;
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Expose for global access
+window.goToView = goToView;
+window.enterExperience = enterExperience;
+</script>
+</body>
+</html>

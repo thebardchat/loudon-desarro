@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Louden/Desaro Gymnasium — Investor Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Barlow:wght@300;400;500;600&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  body{background:#060608;color:#fff;font-family:'Barlow',sans-serif;overflow:hidden;width:100vw;height:100vh}
+
+  #canvas-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+
+  /* ========== HERO ========== */
+  #hero{
+    position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    background:radial-gradient(ellipse at 50% 40%,rgba(15,12,8,0.2) 0%,rgba(6,6,8,0.92) 70%);
+    transition:opacity 1.4s cubic-bezier(.4,0,.2,1);pointer-events:auto;
+  }
+  #hero.hidden{opacity:0;pointer-events:none}
+
+  .hero-loc{
+    font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:13px;
+    letter-spacing:8px;text-transform:uppercase;color:rgba(212,175,55,0.7);
+    margin-bottom:20px;opacity:0;animation:rise 1s .3s forwards;
+  }
+  .hero-name{
+    font-family:'Playfair Display',serif;font-weight:800;
+    font-size:clamp(38px,9vw,110px);line-height:.92;text-align:center;
+    letter-spacing:-2px;opacity:0;animation:rise 1.1s .5s forwards;
+  }
+  .hero-name em{
+    font-style:italic;font-weight:400;color:#d4af37;display:block;
+    font-size:.35em;letter-spacing:6px;margin-top:12px;font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase;
+  }
+  .hero-desc{
+    font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(14px,2vw,18px);
+    color:rgba(255,255,255,0.45);margin-top:28px;text-align:center;max-width:540px;
+    line-height:1.7;opacity:0;animation:rise 1s .8s forwards;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:36px;
+    margin-top:44px;opacity:0;animation:rise 1s 1.1s forwards;
+  }
+  .hg-item{text-align:center}
+  .hg-val{font-family:'Playfair Display',serif;font-weight:700;font-size:32px;color:#d4af37}
+  .hg-lab{
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;
+    text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:4px;
+  }
+  .hero-enter{
+    margin-top:52px;padding:16px 64px;background:transparent;
+    border:1px solid rgba(212,175,55,0.4);color:#d4af37;
+    font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;
+    letter-spacing:6px;text-transform:uppercase;cursor:pointer;
+    transition:all .4s ease;opacity:0;animation:rise 1s 1.4s forwards;
+  }
+  .hero-enter:hover{background:#d4af37;color:#0a0a0a;transform:scale(1.03)}
+
+  /* ========== HUD ========== */
+  #hud{position:fixed;z-index:5;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s ease}
+  #hud.on{opacity:1}
+
+  .hud-bar{
+    position:absolute;top:0;left:0;right:0;height:72px;
+    background:linear-gradient(180deg,rgba(6,6,8,0.8) 0%,transparent 100%);
+    display:flex;justify-content:space-between;align-items:center;padding:0 36px;
+  }
+  .hud-brand{font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:1px}
+  .hud-brand span{color:#d4af37}
+  .hud-loc{
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;
+    text-transform:uppercase;color:rgba(255,255,255,0.3);
+  }
+
+  #viewlabel{
+    position:absolute;bottom:96px;left:50%;transform:translateX(-50%);text-align:center;
+    transition:opacity .4s ease;
+  }
+  .vl-name{
+    font-family:'Playfair Display',serif;font-weight:700;font-size:26px;
+    letter-spacing:2px;text-shadow:0 2px 24px rgba(0,0,0,0.9);
+  }
+  .vl-dims{
+    font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:3px;
+    color:#d4af37;margin-top:6px;text-transform:uppercase;
+  }
+
+  .nav-bar{
+    position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+    display:flex;gap:6px;pointer-events:auto;
+  }
+  .nav-btn{
+    padding:10px 18px;background:rgba(6,6,8,0.7);
+    border:1px solid rgba(212,175,55,0.15);color:rgba(255,255,255,0.5);
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;cursor:pointer;transition:all .3s ease;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  }
+  .nav-btn:hover,.nav-btn.on{background:rgba(212,175,55,0.12);border-color:rgba(212,175,55,0.5);color:#d4af37}
+
+  /* Transform toggle */
+  .transform-toggle{
+    position:absolute;top:80px;left:50%;transform:translateX(-50%);
+    pointer-events:auto;display:flex;gap:2px;
+  }
+  .tt-btn{
+    padding:8px 20px;background:rgba(6,6,8,0.8);
+    border:1px solid rgba(212,175,55,0.2);color:rgba(255,255,255,0.4);
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;
+    text-transform:uppercase;cursor:pointer;transition:all .3s ease;
+  }
+  .tt-btn:first-child{border-radius:4px 0 0 4px}
+  .tt-btn:last-child{border-radius:0 4px 4px 0}
+  .tt-btn.on{background:rgba(212,175,55,0.15);border-color:#d4af37;color:#d4af37}
+
+  .pips{
+    position:absolute;right:32px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:6px;pointer-events:auto;
+  }
+  .pip{
+    width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);
+    cursor:pointer;transition:all .3s ease;
+  }
+  .pip:hover,.pip.on{background:#d4af37;box-shadow:0 0 10px rgba(212,175,55,0.5)}
+
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Grain */
+  #grain{
+    position:fixed;top:0;left:0;width:100%;height:100%;z-index:4;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:256px;
+  }
+
+  @media(max-width:600px){
+    .hero-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+    .nav-bar{flex-wrap:wrap;justify-content:center;max-width:90vw}
+  }
+</style>
+</head>
+<body>
+<div id="canvas-container"></div>
+<div id="grain"></div>
+
+<!-- ===== HERO ===== -->
+<div id="hero">
+  <div class="hero-loc">Hazel Green · Alabama</div>
+  <h1 class="hero-name">
+    Louden / Desaro
+    <em>Gymnasium</em>
+  </h1>
+  <p class="hero-desc">
+    A transformable NCAA-regulation wrestling arena and elite strength &amp; conditioning complex —
+    40 yards of indoor turf, glass garage-door walls, and a facility built for the next generation
+    of Northern Alabama champions.
+  </p>
+  <div class="hero-grid">
+    <div class="hg-item"><div class="hg-val">10,000</div><div class="hg-lab">Square Feet</div></div>
+    <div class="hg-item"><div class="hg-val">NCAA</div><div class="hg-lab">Regulation Arena</div></div>
+    <div class="hg-item"><div class="hg-val">40 yd</div><div class="hg-lab">Indoor Turf</div></div>
+    <div class="hg-item"><div class="hg-val">3</div><div class="hg-lab">Competition Mats</div></div>
+  </div>
+  <button class="hero-enter" onclick="enter()">Enter The Facility →</button>
+</div>
+
+<!-- ===== HUD ===== -->
+<div id="hud">
+  <div class="hud-bar">
+    <div class="hud-brand">Louden / <span>Desaro</span></div>
+    <div class="hud-loc">Hazel Green, AL · Phase 1 · 10,000 SF</div>
+  </div>
+
+  <div class="transform-toggle">
+    <button class="tt-btn on" onclick="setMode('training')">Training Mode</button>
+    <button class="tt-btn" onclick="setMode('arena')">NCAA Arena Mode</button>
+  </div>
+
+  <div id="viewlabel">
+    <div class="vl-name" id="vname">Exterior</div>
+    <div class="vl-dims" id="vdims">Elliptical Metal Structure · 100' × 100'</div>
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn on" onclick="goView(0)">Exterior</button>
+    <button class="nav-btn" onclick="goView(1)">Mat Area</button>
+    <button class="nav-btn" onclick="goView(2)">Turf Zone</button>
+    <button class="nav-btn" onclick="goView(3)">S&C / Glass Walls</button>
+    <button class="nav-btn" onclick="goView(4)">Office</button>
+    <button class="nav-btn" onclick="goView(5)">Aerial</button>
+    <button class="nav-btn" onclick="goView(6)">Cinematic Tour</button>
+  </div>
+
+  <div class="pips">
+    <div class="pip on" onclick="goView(0)"></div>
+    <div class="pip" onclick="goView(1)"></div>
+    <div class="pip" onclick="goView(2)"></div>
+    <div class="pip" onclick="goView(3)"></div>
+    <div class="pip" onclick="goView(4)"></div>
+    <div class="pip" onclick="goView(5)"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ============================================================
+// LOUDEN / DESARO GYMNASIUM — 3D INVESTOR PRESENTATION
+// ============================================================
+
+const FT=.3048, IN=.0254;
+const BW=100*FT, BL=100*FT, BH=22*FT; // 22ft peak for elliptical
+
+// RENDERER
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.15;
+renderer.outputEncoding=THREE.sRGBEncoding;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+// SCENE
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x080a10);
+scene.fog=new THREE.FogExp2(0x080a10,0.004);
+
+// CAMERA
+const cam=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.1,600);
+cam.position.set(55,18,-30);
+
+// LIGHTS
+scene.add(new THREE.AmbientLight(0x304060,0.35));
+scene.add(new THREE.HemisphereLight(0x8ecae6,0x2a1f0a,0.45));
+
+const sun=new THREE.DirectionalLight(0xfff0d0,2.0);
+sun.position.set(45,55,25);
+sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.near=1;sun.shadow.camera.far=160;
+sun.shadow.camera.left=-65;sun.shadow.camera.right=65;
+sun.shadow.camera.top=65;sun.shadow.camera.bottom=-65;
+scene.add(sun);
+
+// Interior warm floods
+const addPt=(x,y,z,c,int,dist)=>{const l=new THREE.PointLight(c,int,dist);l.position.set(x,y,z);scene.add(l)};
+addPt(15,5,15,0xffeedd,1.2,35);
+addPt(8,5,25,0xffeedd,0.8,25);
+addPt(22,5,8,0xffeedd,0.8,25);
+
+// Spot on center mat
+const spot=new THREE.SpotLight(0xffffff,1.5,30,Math.PI/5,0.5);
+spot.position.set(15,12,15);spot.target.position.set(15,0,15);
+scene.add(spot);scene.add(spot.target);
+
+// ============================================================
+// MATERIALS
+// ============================================================
+
+const M={
+  concrete: new THREE.MeshStandardMaterial({color:0x7a7a78,roughness:0.92,metalness:0.05}),
+  metal:    new THREE.MeshStandardMaterial({color:0x2c3a4d,roughness:0.35,metalness:0.75}),
+  metalDk:  new THREE.MeshStandardMaterial({color:0x1a2530,roughness:0.3,metalness:0.85}),
+  roof:     new THREE.MeshStandardMaterial({color:0x3a4555,roughness:0.25,metalness:0.85,side:THREE.DoubleSide}),
+  intWall:  new THREE.MeshStandardMaterial({color:0xe5e0d8,roughness:0.85}),
+  mat:      new THREE.MeshStandardMaterial({color:0xa01020,roughness:0.55}),
+  matGold:  new THREE.MeshStandardMaterial({color:0xd4af37,roughness:0.4,metalness:0.2}),
+  turf:     new THREE.MeshStandardMaterial({color:0x2d7a30,roughness:0.95}),
+  turfLine: new THREE.MeshStandardMaterial({color:0xeeeeee,roughness:0.8}),
+  glass:    new THREE.MeshStandardMaterial({color:0x88ccee,roughness:0.05,metalness:0.3,transparent:true,opacity:0.25}),
+  glassFr:  new THREE.MeshStandardMaterial({color:0x445566,roughness:0.1,metalness:0.4,transparent:true,opacity:0.15}),
+  weight:   new THREE.MeshStandardMaterial({color:0x222228,roughness:0.85}),
+  office:   new THREE.MeshStandardMaterial({color:0xb8a07a,roughness:0.7}),
+  steel:    new THREE.MeshStandardMaterial({color:0x484848,roughness:0.25,metalness:0.92}),
+  door:     new THREE.MeshStandardMaterial({color:0xd4af37,roughness:0.4,metalness:0.4}),
+  ground:   new THREE.MeshStandardMaterial({color:0x1e2a16,roughness:1}),
+  asphalt:  new THREE.MeshStandardMaterial({color:0x2a2a2a,roughness:0.95}),
+  rubber:   new THREE.MeshStandardMaterial({color:0x1a1a1e,roughness:0.9}),
+  seating:  new THREE.MeshStandardMaterial({color:0x3a3a4a,roughness:0.6}),
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function box(name,w,h,d,x,y,z,mat,shad=true){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+  m.position.set(x,y,z);m.castShadow=shad;m.receiveShadow=true;
+  m.name=name;scene.add(m);return m;
+}
+
+// ============================================================
+// GROUND & PARKING
+// ============================================================
+
+const gnd=new THREE.Mesh(new THREE.PlaneGeometry(400,400),M.ground);
+gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.2;gnd.receiveShadow=true;scene.add(gnd);
+
+const lot=new THREE.Mesh(new THREE.PlaneGeometry(40,25),M.asphalt);
+lot.rotation.x=-Math.PI/2;lot.position.set(15,-0.1,-16);lot.receiveShadow=true;scene.add(lot);
+
+// Parking lines
+for(let i=0;i<12;i++){
+  const s=new THREE.Mesh(new THREE.PlaneGeometry(0.12,5.5),new THREE.MeshBasicMaterial({color:0xdddddd}));
+  s.rotation.x=-Math.PI/2;s.position.set(i*3-2,-0.08,-16);scene.add(s);
+}
+
+// ============================================================
+// SLAB FOUNDATION
+// ============================================================
+
+box("slab",BW+.5,0.18,BL+.5, BW/2,-0.09,BL/2, M.concrete);
+
+// ============================================================
+// ELLIPTICAL SHELL (walls + roof as curved structure)
+// ============================================================
+
+// Build elliptical cross-section extruded along the building length
+// The building is elliptical in the width (X) direction with height
+// Uses a half-ellipse from one side to the other
+
+const shellSegs=48;
+const shellLen=BL; // Along Z axis
+
+// Create elliptical arch geometry
+function createEllipticalShell(){
+  const group=new THREE.Group();
+  
+  const a=BW/2;   // semi-major (horizontal half-width)
+  const b=BH;     // semi-minor (height)
+  const thick=0.12;
+  
+  // Outer shell as extruded shape
+  const shape=new THREE.Shape();
+  // Bottom left
+  shape.moveTo(-a,0);
+  // Elliptical arch (half ellipse from left to right)
+  const pts=64;
+  for(let i=0;i<=pts;i++){
+    const t=Math.PI*i/pts; // 0 to PI
+    const x=-a*Math.cos(t);
+    const y=b*Math.sin(t);
+    shape.lineTo(x,y);
+  }
+  // Back along bottom
+  shape.lineTo(a,0);
+  
+  // Inner cutout (slightly smaller ellipse)
+  const hole=new THREE.Path();
+  const ai=a-thick, bi=b-thick;
+  hole.moveTo(-ai,0);
+  for(let i=0;i<=pts;i++){
+    const t=Math.PI*i/pts;
+    hole.lineTo(-ai*Math.cos(t), bi*Math.sin(t));
+  }
+  hole.lineTo(ai,0);
+  shape.holes.push(hole);
+  
+  const extrudeSettings={
+    steps:1, depth:shellLen, bevelEnabled:false
+  };
+  
+  const geo=new THREE.ExtrudeGeometry(shape,extrudeSettings);
+  const mesh=new THREE.Mesh(geo,M.metal);
+  mesh.position.set(BW/2,0,0);
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+  mesh.name="EllipticalShell";
+  group.add(mesh);
+  
+  // End caps (north and south) — with glass entrance on south
+  // South cap (front) — glass
+  const capShape=new THREE.Shape();
+  capShape.moveTo(-a,0);
+  for(let i=0;i<=pts;i++){
+    const t=Math.PI*i/pts;
+    capShape.lineTo(-a*Math.cos(t), b*Math.sin(t));
+  }
+  capShape.lineTo(a,0);
+  
+  const capGeo=new THREE.ShapeGeometry(capShape);
+  
+  const southCap=new THREE.Mesh(capGeo,M.glassFr);
+  southCap.position.set(BW/2,0,0.01);
+  southCap.name="SouthFacade";
+  group.add(southCap);
+  
+  const northCap=new THREE.Mesh(capGeo.clone(),M.metalDk);
+  northCap.position.set(BW/2,0,BL-0.01);
+  northCap.name="NorthWall";
+  group.add(northCap);
+  
+  return group;
+}
+
+const shell=createEllipticalShell();
+scene.add(shell);
+
+// ============================================================
+// GLASS GARAGE DOORS (S&C side — east wall, full length)
+// ============================================================
+
+// The east side of the elliptical shell has glass garage doors
+// We represent these as glass panels along the east curve
+const garageGroup=new THREE.Group();
+garageGroup.name="GlassGarageDoors";
+
+const numDoors=8;
+const doorW=BL/numDoors;
+const doorH=12*FT;
+
+for(let i=0;i<numDoors;i++){
+  // Glass panel
+  const glass=new THREE.Mesh(
+    new THREE.PlaneGeometry(doorW-0.15, doorH),
+    M.glass
+  );
+  glass.position.set(BW-0.08, doorH/2, i*doorW+doorW/2);
+  glass.rotation.y=Math.PI/2;
+  glass.name=`GarageDoor_${i+1}`;
+  garageGroup.add(glass);
+  
+  // Frame (gold accent)
+  const frameH=new THREE.Mesh(
+    new THREE.BoxGeometry(doorW-0.15,0.06,0.06),
+    M.door
+  );
+  frameH.position.set(BW-0.05, doorH, i*doorW+doorW/2);
+  frameH.rotation.y=Math.PI/2;
+  garageGroup.add(frameH);
+  
+  // Vertical frame dividers
+  const frameV=new THREE.Mesh(
+    new THREE.BoxGeometry(0.06,doorH,0.06),
+    M.door
+  );
+  frameV.position.set(BW-0.05, doorH/2, i*doorW);
+  garageGroup.add(frameV);
+}
+
+scene.add(garageGroup);
+
+// Also add glass on the west side (partial — viewing windows)
+for(let i=2;i<6;i++){
+  const g=new THREE.Mesh(
+    new THREE.PlaneGeometry(doorW-0.15,8*FT),
+    M.glass
+  );
+  g.position.set(0.08,4*FT,i*doorW+doorW/2);
+  g.rotation.y=-Math.PI/2;
+  scene.add(g);
+}
+
+// ============================================================
+// INTERIOR LAYOUT — TRAINING MODE
+// ============================================================
+
+// Divider wall at 60' from west (separating mat/turf from S&C)
+const divX=60*FT;
+const divider=box("Divider",0.12,10*FT,BL, divX,5*FT,BL/2, M.intWall);
+
+// --- WEST SIDE: Wrestling Mats + Turf (60' x 100') ---
+
+// WRESTLING MATS (3 NCAA 42'x42' mats)
+const MS=42*FT, MH=0.05;
+
+// Training mode: 2 mats south + 1 mat north
+const trainingMats=new THREE.Group();
+trainingMats.name="TrainingMats";
+
+function makeMat(x,z,parent){
+  const mb=new THREE.Mesh(new THREE.BoxGeometry(MS,MH,MS),M.mat);
+  mb.position.set(x+MS/2,MH/2,z+MS/2);mb.receiveShadow=true;parent.add(mb);
+  // Center circle
+  const cc=new THREE.Mesh(new THREE.CylinderGeometry(3,3,0.01,32),M.matGold);
+  cc.position.set(x+MS/2,MH+0.01,z+MS/2);parent.add(cc);
+  // Outer ring
+  const or2=new THREE.Mesh(new THREE.TorusGeometry(5,0.07,8,48),M.matGold);
+  or2.rotation.x=-Math.PI/2;or2.position.set(x+MS/2,MH+0.01,z+MS/2);parent.add(or2);
+  // 10ft inner circle
+  const ic=new THREE.Mesh(new THREE.TorusGeometry(10*FT/2,0.04,8,32),M.matGold);
+  ic.rotation.x=-Math.PI/2;ic.position.set(x+MS/2,MH+0.01,z+MS/2);parent.add(ic);
+}
+
+// Row 1: Two mats
+makeMat(2*FT, 2*FT, trainingMats);
+makeMat(2*FT, 2*FT+MS+3*FT, trainingMats);
+
+// Row 2: Third mat (warm-up)
+makeMat(2*FT+MS+3*FT, (BL-MS)/2, trainingMats);
+
+scene.add(trainingMats);
+
+// NCAA ARENA MODE (retractable seating + single center mat)
+const arenaMats=new THREE.Group();
+arenaMats.name="ArenaMats";
+arenaMats.visible=false;
+
+// Single center competition mat
+makeMat((divX-MS)/2-1, (BL-MS)/2, arenaMats);
+
+// Retractable bleachers on west and south/north sides
+function makeSeating(x,z,w,d,rows){
+  const g=new THREE.Group();
+  for(let r=0;r<rows;r++){
+    const seat=new THREE.Mesh(
+      new THREE.BoxGeometry(w,0.4,d/rows-0.1),
+      M.seating
+    );
+    seat.position.set(x, 0.4+r*0.55, z+r*(d/rows));
+    seat.receiveShadow=true;
+    g.add(seat);
+  }
+  return g;
+}
+
+// West bleachers
+const westBleach=makeSeating(3*FT, 3*FT, divX-8*FT, 6, 5);
+arenaMats.add(westBleach);
+
+// North bleachers
+const northBleach=makeSeating(divX/2, BL-10*FT, divX-6*FT, 6, 4);
+northBleach.rotation.y=0;
+arenaMats.add(northBleach);
+
+// South bleachers
+const southBleach=makeSeating(divX/2, 2*FT, divX-6*FT, 6, 4);
+arenaMats.add(southBleach);
+
+// Scoreboard (hanging above center mat)
+const scoreboard=new THREE.Mesh(
+  new THREE.BoxGeometry(4,1.5,0.2),
+  new THREE.MeshStandardMaterial({color:0x111115,roughness:0.3,metalness:0.5,emissive:0x0a0a15,emissiveIntensity:0.3})
+);
+scoreboard.position.set(divX/2-1,BH*0.65,BL/2);
+arenaMats.add(scoreboard);
+
+// Scoreboard accent
+const sbAccent=new THREE.Mesh(
+  new THREE.BoxGeometry(4.2,0.04,0.22),
+  M.door
+);
+sbAccent.position.set(divX/2-1,BH*0.65-0.8,BL/2);
+arenaMats.add(sbAccent);
+
+scene.add(arenaMats);
+
+// ============================================================
+// 40-YARD INDOOR TURF (between mat area and S&C)
+// ============================================================
+
+// Turf runs along the north section of the west side
+// 40 yards = 120 feet. Our building is 100' long.
+// Turf width: about 15 feet, running full 100' length
+const turfW=15*FT;
+const turfL=BL; // full length of building
+const turfX=divX-turfW-1*FT; // against divider wall
+
+const turf=new THREE.Mesh(
+  new THREE.BoxGeometry(turfW,0.03,turfL),
+  M.turf
+);
+turf.position.set(turfX+turfW/2,0.02,BL/2);
+turf.receiveShadow=true;
+turf.name="IndoorTurf";
+scene.add(turf);
+
+// Yard lines every 5 yards
+for(let y=0;y<=8;y++){
+  const line=new THREE.Mesh(
+    new THREE.BoxGeometry(turfW-0.3,0.005,0.06),
+    M.turfLine
+  );
+  line.position.set(turfX+turfW/2, 0.04, y*5*3*FT+5*FT);
+  scene.add(line);
+}
+
+// ============================================================
+// S&C / STRENGTH & CONDITIONING (East side — 40' x 100')
+// ============================================================
+
+const scX=divX+0.15;
+const scW=BW-divX-0.15;
+
+// Rubber flooring
+const rubberFloor=new THREE.Mesh(
+  new THREE.BoxGeometry(scW-0.3,0.04,BL-0.3),
+  M.rubber
+);
+rubberFloor.position.set(scX+scW/2,0.02,BL/2);
+rubberFloor.receiveShadow=true;
+scene.add(rubberFloor);
+
+// Equipment representations (racks, platforms)
+for(let i=0;i<5;i++){
+  // Power rack
+  const rack=box(`Rack_${i}`,1.2,2.4,1.5, scX+3, 1.2, 5+i*6, M.steel);
+  // Bench/platform
+  box(`Platform_${i}`,2,0.15,1.8, scX+7, 0.08, 5+i*6, M.rubber);
+}
+
+// Dumbbell rack (long)
+box("DBRack",0.6,1.2,12, scX+scW-2, 0.6, BL/2, M.steel);
+
+// Cable machines
+for(let i=0;i<3;i++){
+  box(`Cable_${i}`,0.8,2.8,0.8, scX+scW/2, 1.4, 8+i*10, M.steel);
+}
+
+// Elliptical machines (along the glass walls!)
+for(let i=0;i<6;i++){
+  // Elliptical base
+  const eBase=box(`Elliptical_${i}`,0.7,0.5,1.5, scX+scW-4, 0.3, 3+i*5, M.metalDk,false);
+  // Handles
+  box(`EllipHandle_${i}`,0.05,1.2,0.05, scX+scW-4, 1.1, 3+i*5-0.3, M.steel,false);
+  box(`EllipHandle2_${i}`,0.05,1.2,0.05, scX+scW-4, 1.1, 3+i*5+0.3, M.steel,false);
+}
+
+// ============================================================
+// OFFICE / VIEWING (Southwest corner, 20' x 16')
+// ============================================================
+
+const offW=20*FT, offD=16*FT;
+box("OfficeFloor",offW,0.04,offD, offW/2,0.02,offD/2, M.office);
+box("OfficeWallN",offW,8*FT,0.1, offW/2,4*FT,offD, M.intWall);
+box("OfficeWallE",0.1,8*FT,offD, offW,4*FT,offD/2, M.intWall);
+
+// Glass viewing into mat area
+const offGlass=new THREE.Mesh(
+  new THREE.PlaneGeometry(offW-1,6*FT),
+  M.glass
+);
+offGlass.position.set(offW/2,4*FT,offD+0.05);
+scene.add(offGlass);
+
+// ============================================================
+// STEEL STRUCTURE (Ribs every 20')
+// ============================================================
+
+for(let i=0;i<=5;i++){
+  const z=i*20*FT;
+  // Create elliptical rib
+  const ribPts=[];
+  const ribSegs=32;
+  const ra=BW/2, rb=BH;
+  for(let j=0;j<=ribSegs;j++){
+    const t=Math.PI*j/ribSegs;
+    ribPts.push(new THREE.Vector3(-ra*Math.cos(t)+BW/2, rb*Math.sin(t), z));
+  }
+  const ribCurve=new THREE.CatmullRomCurve3(ribPts);
+  const ribGeo=new THREE.TubeGeometry(ribCurve,32,0.08,6,false);
+  const rib=new THREE.Mesh(ribGeo,M.steel);
+  rib.name=`Rib_${i}`;
+  rib.castShadow=true;
+  scene.add(rib);
+}
+
+// ============================================================
+// ENTRANCE (South facade — glass with gold frame)
+// ============================================================
+
+// Main doors
+box("EntranceDoor",3,2.8,0.15, BW*0.35,1.4,-0.1, M.door);
+box("EntranceDoor2",3,2.8,0.15, BW*0.55,1.4,-0.1, M.door);
+
+// Sign — building name
+const signBg=box("SignBG",10,1.8,0.08, BW/2,BH*0.5,-0.15, M.metalDk);
+const signAccent=box("SignAccent",10.5,0.04,0.1, BW/2,BH*0.5-0.95,-0.16, M.door);
+
+// ============================================================
+// CAMERA VIEWS
+// ============================================================
+
+const views=[
+  {pos:[55,16,-28], tgt:[15,3,15], name:"Exterior", dims:"Elliptical Metal Structure · 100' × 100'"},
+  {pos:[8,3.5,8], tgt:[10,1,20], name:"Competition Mat Area", dims:"Three NCAA 42' × 42' Mats · Transformable Arena"},
+  {pos:[14,2.5,22], tgt:[16,0.5,18], name:"40-Yard Indoor Turf", dims:"Sprint Training · Agility · Conditioning"},
+  {pos:[26,3,16], tgt:[28,2,15], name:"Strength & Conditioning", dims:"Glass Garage Doors · Full Equipment · Ellipticals"},
+  {pos:[3,2.5,3], tgt:[5,1.5,6], name:"Office & Viewing Area", dims:"Glass Wall Overlooking Mats · Parent Seating"},
+  {pos:[15,60,15], tgt:[15,0,15], name:"Aerial Overview", dims:"10,000 SF · Louden/Desaro Gymnasium"},
+];
+
+let curView=0, autoMode=false, autoTimer=null;
+let tPos=new THREE.Vector3(55,16,-28);
+let tLook=new THREE.Vector3(15,3,15);
+let cLook=new THREE.Vector3(15,3,15);
+let mode='training';
+
+// ============================================================
+// CONTROLS
+// ============================================================
+
+function goView(i){
+  if(i===6){startTour();return}
+  stopTour();
+  curView=i;
+  const v=views[i];
+  tPos.set(...v.pos);
+  tLook.set(...v.tgt);
+  document.getElementById('vname').textContent=v.name;
+  document.getElementById('vdims').textContent=v.dims;
+  document.querySelectorAll('.nav-btn').forEach((b,j)=>b.classList.toggle('on',j===i));
+  document.querySelectorAll('.pip').forEach((p,j)=>p.classList.toggle('on',j===i));
+}
+
+function setMode(m){
+  mode=m;
+  trainingMats.visible=(m==='training');
+  arenaMats.visible=(m==='arena');
+  document.querySelectorAll('.tt-btn').forEach((b,j)=>{
+    b.classList.toggle('on', (j===0&&m==='training')||(j===1&&m==='arena'));
+  });
+  if(m==='arena'){
+    goView(1);
+    document.getElementById('vdims').textContent='NCAA Arena Mode · Retractable Seating · Scoreboard';
+  }
+}
+
+function startTour(){
+  autoMode=true;let ti=0;
+  document.querySelectorAll('.nav-btn').forEach((b,j)=>b.classList.toggle('on',j===6));
+  function next(){goView(ti%6);autoMode=true;ti++;autoTimer=setTimeout(next,5000);
+    document.querySelectorAll('.nav-btn').forEach((b,j)=>b.classList.toggle('on',j===6));}
+  next();
+}
+function stopTour(){autoMode=false;if(autoTimer)clearTimeout(autoTimer)}
+
+function enter(){
+  document.getElementById('hero').classList.add('hidden');
+  document.getElementById('hud').classList.add('on');
+  goView(0);
+}
+
+// Mouse orbit
+let md=false,lm={x:0,y:0},orb={t:0,p:0};
+renderer.domElement.addEventListener('mousedown',e=>{md=true;lm={x:e.clientX,y:e.clientY};stopTour()});
+renderer.domElement.addEventListener('mousemove',e=>{
+  if(!md)return;
+  orb.t+=(e.clientX-lm.x)*0.003;
+  orb.p=Math.max(-0.5,Math.min(0.5,orb.p+(e.clientY-lm.y)*0.003));
+  lm={x:e.clientX,y:e.clientY};
+});
+renderer.domElement.addEventListener('mouseup',()=>md=false);
+
+// Touch
+renderer.domElement.addEventListener('touchstart',e=>{md=true;lm={x:e.touches[0].clientX,y:e.touches[0].clientY};stopTour()},{passive:true});
+renderer.domElement.addEventListener('touchmove',e=>{
+  if(!md)return;
+  orb.t+=(e.touches[0].clientX-lm.x)*0.005;
+  orb.p=Math.max(-0.5,Math.min(0.5,orb.p+(e.touches[0].clientY-lm.y)*0.005));
+  lm={x:e.touches[0].clientX,y:e.touches[0].clientY};
+},{passive:true});
+renderer.domElement.addEventListener('touchend',()=>md=false);
+
+// Zoom
+renderer.domElement.addEventListener('wheel',e=>{
+  const d=cam.position.clone().sub(cLook).normalize();
+  tPos.add(d.multiplyScalar(e.deltaY*0.02));
+  stopTour();
+});
+
+// ============================================================
+// ANIMATE
+// ============================================================
+
+const clock=new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt=Math.min(clock.getDelta(),0.05);
+  const spd=2.0*dt;
+
+  let fp=tPos.clone();
+  if(orb.t||orb.p){
+    const off=cam.position.clone().sub(cLook);
+    const r=off.length();
+    const th=Math.atan2(off.x,off.z)+orb.t;
+    const ph=Math.max(0.1,Math.min(Math.PI/2-0.1,Math.acos(off.y/r)+orb.p));
+    fp.set(cLook.x+r*Math.sin(ph)*Math.sin(th),cLook.y+r*Math.cos(ph),cLook.z+r*Math.sin(ph)*Math.cos(th));
+  }
+
+  cam.position.lerp(fp,spd);
+  cLook.lerp(tLook,spd);
+  cam.lookAt(cLook);
+  orb.t*=0.94;orb.p*=0.94;
+
+  renderer.render(scene,cam);
+}
+animate();
+
+window.addEventListener('resize',()=>{
+  cam.aspect=innerWidth/innerHeight;
+  cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+
+window.goView=goView;window.enter=enter;window.setMode=setMode;
+</script>
+</body>
+</html>

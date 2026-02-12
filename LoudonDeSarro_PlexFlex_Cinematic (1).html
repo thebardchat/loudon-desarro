@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loudon / DeSarro Gymnasium — PLEX FLEX™</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Barlow:wght@300;400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#060608;color:#fff;font-family:'Barlow',sans-serif;overflow:hidden;width:100vw;height:100vh;user-select:none}
+  canvas{display:block}
+  #C{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+
+  /* HERO */
+  #hero{position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;display:flex;flex-direction:column;justify-content:center;align-items:center;background:radial-gradient(ellipse at 50% 40%,rgba(15,12,8,0.08) 0%,rgba(6,6,8,0.93) 70%);transition:opacity 1.4s ease}
+  #hero.off{opacity:0;pointer-events:none}
+  .hl{font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:12px;letter-spacing:7px;text-transform:uppercase;color:rgba(212,175,55,0.65);margin-bottom:16px;opacity:0;animation:r 1s .3s forwards}
+  .hn{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(30px,7vw,88px);line-height:.9;text-align:center;letter-spacing:-1px;opacity:0;animation:r 1s .5s forwards}
+  .hn em{font-style:italic;font-weight:400;color:#d4af37;display:block;font-size:.28em;letter-spacing:5px;margin-top:8px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
+  .hn .pfx{display:block;font-size:.18em;letter-spacing:8px;font-family:'Barlow Condensed',sans-serif;font-weight:300;color:rgba(255,255,255,0.28);margin-top:10px;text-transform:uppercase}
+  .hd{font-weight:300;font-size:clamp(12px,1.6vw,15px);color:rgba(255,255,255,0.35);margin-top:20px;text-align:center;max-width:540px;line-height:1.7;opacity:0;animation:r 1s .8s forwards}
+  .hg{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:32px;opacity:0;animation:r 1s 1s forwards}
+  .hv{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;color:#d4af37;text-align:center}
+  .hlb{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.22);text-align:center;margin-top:2px}
+  .hbtns{display:flex;gap:12px;margin-top:36px;opacity:0;animation:r 1s 1.2s forwards}
+  .hb{padding:13px 44px;background:0;border:1px solid rgba(212,175,55,0.35);color:#d4af37;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+  .hb:hover{background:#d4af37;color:#0a0a0a}
+  .hb.pri{background:rgba(212,175,55,0.1);border-color:rgba(212,175,55,0.5)}
+
+  /* HUD */
+  #hud{position:fixed;z-index:5;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .6s}
+  #hud.on{opacity:1}
+  .bar{position:absolute;top:0;left:0;right:0;height:56px;background:linear-gradient(180deg,rgba(6,6,8,.8) 0%,transparent);display:flex;justify-content:space-between;align-items:center;padding:0 22px}
+  .brand{font-family:'Playfair Display',serif;font-weight:700;font-size:13px}
+  .brand span{color:#d4af37}
+  .brand .pfbadge{font-family:'Barlow Condensed';font-weight:400;font-size:9px;letter-spacing:2px;color:rgba(212,175,55,0.45);margin-left:6px;border:1px solid rgba(212,175,55,0.2);padding:2px 6px;border-radius:2px}
+  .tinf{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2)}
+
+  /* Phase label */
+  #phase{position:absolute;top:62px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;transition:opacity .4s}
+  .ph-name{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#d4af37}
+  .ph-desc{font-family:'Barlow',sans-serif;font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px}
+
+  /* Progress bar */
+  #pbar{position:absolute;top:90px;left:50%;transform:translateX(-50%);width:240px;height:2px;background:rgba(255,255,255,0.06);border-radius:2px;pointer-events:none}
+  #pfill{height:100%;background:#d4af37;border-radius:2px;width:0%;transition:width .3s}
+
+  /* View label */
+  #vl{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);text-align:center}
+  .vn{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  .vd{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:#d4af37;margin-top:3px;text-transform:uppercase}
+
+  /* Nav */
+  .nav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:3px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:98vw}
+  .nb{padding:6px 10px;background:rgba(6,6,8,.55);border:1px solid rgba(212,175,55,.08);color:rgba(255,255,255,.35);font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .nb:hover,.nb.on{background:rgba(212,175,55,.08);border-color:rgba(212,175,55,.3);color:#d4af37}
+  .nb.gold{background:rgba(212,175,55,.15);border-color:#d4af37;color:#d4af37}
+
+  /* Still photo overlay */
+  #still{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;opacity:0;transition:opacity .5s}
+  #still.on{opacity:1}
+  .still-border{position:absolute;top:3%;left:3%;right:3%;bottom:3%;border:1px solid rgba(212,175,55,0.25)}
+  .still-corner{position:absolute;width:20px;height:20px;border-color:#d4af37;border-style:solid}
+  .sc-tl{top:3%;left:3%;border-width:1px 0 0 1px}
+  .sc-tr{top:3%;right:3%;border-width:1px 1px 0 0}
+  .sc-bl{bottom:3%;left:3%;border-width:0 0 1px 1px}
+  .sc-br{bottom:3%;right:3%;border-width:0 1px 1px 0}
+  .still-label{position:absolute;bottom:5%;right:5%;font-family:'Barlow Condensed';font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,175,55,0.5)}
+
+  /* Cinematic bars */
+  .cbar{position:absolute;left:0;right:0;height:0;background:#000;transition:height .8s ease;z-index:3}
+  .cbar.top{top:0}.cbar.bot{bottom:0}
+  .cbar.on{height:8%}
+
+  @keyframes r{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:600px){.hg{grid-template-columns:repeat(3,1fr);gap:12px}.nav{gap:2px}}
+</style>
+</head>
+<body>
+<div id="C"></div>
+<div class="cbar top" id="cTop"></div>
+<div class="cbar bot" id="cBot"></div>
+<div id="still"><div class="still-border"></div><div class="still-corner sc-tl"></div><div class="still-corner sc-tr"></div><div class="still-corner sc-bl"></div><div class="still-corner sc-br"></div><div class="still-label">Loudon / DeSarro · Still Frame</div></div>
+
+<div id="hero">
+  <div class="hl">Hazel Green · Alabama</div>
+  <h1 class="hn">Loudon / DeSarro
+    <em>Gymnasium</em>
+    <span class="pfx">featuring PLEX FLEX™ Retractable Arena System</span>
+  </h1>
+  <p class="hd">50,000 square feet of transformable athletic architecture. The world's first retractable concrete beam bleacher system — 2,600 seats that deploy inside, outside, or split between both in minutes.</p>
+  <div class="hg">
+    <div><div class="hv">50K</div><div class="hlb">Square Feet</div></div>
+    <div><div class="hv">2,600</div><div class="hlb">Seats</div></div>
+    <div><div class="hv">NCAA</div><div class="hlb">Wrestling</div></div>
+    <div><div class="hv">40 yd</div><div class="hlb">Indoor Turf</div></div>
+    <div><div class="hv">FLEX™</div><div class="hlb">Plex Flex</div></div>
+  </div>
+  <div class="hbtns">
+    <button class="hb pri" onclick="startBuild()">Watch It Built →</button>
+    <button class="hb" onclick="enterExplore()">Explore Facility</button>
+  </div>
+</div>
+
+<div id="hud">
+  <div class="bar">
+    <div class="brand">Loudon / <span>DeSarro</span><span class="pfbadge">PLEX FLEX™</span></div>
+    <div class="tinf">Hazel Green, AL · 50,000 SF · 200' × 250'</div>
+  </div>
+  <div id="phase"><div class="ph-name" id="PN"></div><div class="ph-desc" id="PD"></div></div>
+  <div id="pbar"><div id="pfill"></div></div>
+  <div id="vl"><div class="vn" id="VN"></div><div class="vd" id="VD"></div></div>
+  <div class="nav" id="navBar"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ============================================================
+// LOUDON / DeSARRO GYMNASIUM — CINEMATIC PLEX FLEX™
+// 200' × 250' × 65' Quonset Hangar
+// ============================================================
+
+const F=.3048, BW=200*F, BL=250*F, BH=65*F;
+const BEAM_L=20*F, BEAM_W=2.5*F, BEAM_H=2.5*F;
+const ROWS=16, SECTIONS=12, SEC_L=BL/SECTIONS;
+const WALL_X=BW;
+const WZ=80*F, TZ_S=WZ+5*F, TZ_L=120*F;
+const SC_S=TZ_S+TZ_L+5*F, SC_LEN=BL-SC_S-3*F;
+const MS=42*F;
+
+// RENDERER
+const R=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance',preserveDrawingBuffer:true});
+R.setSize(innerWidth,innerHeight);R.setPixelRatio(1);
+R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
+document.getElementById('C').appendChild(R.domElement);
+
+const sc=new THREE.Scene();
+sc.background=new THREE.Color(0x0a0e14);
+const cam=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.5,500);
+
+// LIGHTS
+sc.add(new THREE.AmbientLight(0x506080,0.4));
+sc.add(new THREE.HemisphereLight(0x8ecae6,0x2a1f0a,0.5));
+const sun=new THREE.DirectionalLight(0xfff0d0,1.5);sun.position.set(60,80,40);sc.add(sun);
+[{x:BW/2,y:10,z:BL*.25},{x:BW/2,y:10,z:BL*.55},{x:BW*.3,y:8,z:BL*.15},{x:BW*.7,y:8,z:BL*.7}].forEach(l=>{
+  const p=new THREE.PointLight(0xffeedd,1,55);p.position.set(l.x,l.y,l.z);sc.add(p);
+});
+
+// MATERIALS
+const m=(c,o)=>new THREE.MeshLambertMaterial({color:c,...(o||{})});
+const M={
+  slab:m(0x7a7a78),metal:m(0x2a3848),glass:m(0x88ccee,{transparent:true,opacity:0.16}),
+  glassFr:m(0x445566,{transparent:true,opacity:0.08}),steel:m(0x484848),
+  mat:m(0xa01020),gold:m(0xd4af37),turf:m(0x2d7a30),white:m(0xeeeeee),
+  rubber:m(0x1a1a1e),wall:m(0xe5e0d8),office:m(0xb8a07a),
+  concrete:m(0x8a8a85),concSeat:m(0x9a9a95),track:m(0x555555),
+  door:m(0xd4af37),asphalt:m(0x2a2a2a),ground:m(0x1e2a16),
+  sign:m(0x0a0a0e),equip:m(0x222228),field:m(0x1a5a20),
+};
+
+function bx(w,h,d,x,y,z,mt){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mt);o.position.set(x,y,z);return o}
+function add(o){sc.add(o);return o}
+
+// ============================================================
+// BUILD GROUPS (for animation — each phase shows/hides)
+// ============================================================
+
+const G={
+  ground:new THREE.Group(),
+  foundation:new THREE.Group(),
+  steel:new THREE.Group(),
+  shell:new THREE.Group(),
+  interior:new THREE.Group(),
+  mats_train:new THREE.Group(),
+  mats_arena:new THREE.Group(),
+  turf:new THREE.Group(),
+  sc:new THREE.Group(),
+  garage:new THREE.Group(),
+  office:new THREE.Group(),
+  entrance:new THREE.Group(),
+  flexIn:new THREE.Group(),
+  flexHalf:new THREE.Group(),
+  flexOut:new THREE.Group(),
+  tracks:new THREE.Group(),
+};
+Object.values(G).forEach(g=>{g.visible=false;sc.add(g)});
+
+// ---- GROUND ----
+G.ground.add(bx(500,0.01,500, 0,-0.3,0, M.ground));
+G.ground.add(bx(80,0.06,28, BW/2,-0.18,-18, M.asphalt));
+for(let i=0;i<24;i++)G.ground.add(bx(0.06,0.01,4.5, 6+i*3,-0.12,-18, M.white));
+G.ground.add(bx(60,0.04,BL, BW+30,-0.2,BL/2, M.field));
+
+// ---- FOUNDATION ----
+G.foundation.add(bx(BW+0.3,0.2,BL+0.3, BW/2,-0.1,BL/2, M.slab));
+
+// ---- STEEL RIBS ----
+for(let f=0;f<=10;f++){
+  const z=f*25*F, seg=16, pts=[];
+  for(let i=0;i<=seg;i++){
+    const ang=Math.PI*i/seg;
+    pts.push(new THREE.Vector3(-BW/2*Math.cos(ang)+BW/2, BH*Math.sin(ang), z));
+  }
+  const curve=new THREE.CatmullRomCurve3(pts);
+  G.steel.add(new THREE.Mesh(new THREE.TubeGeometry(curve,seg,0.14,4,false),M.steel));
+}
+
+// ---- SHELL ----
+(function(){
+  const a=BW/2,b=BH,seg=20,t=0.5;
+  const shape=new THREE.Shape();
+  shape.moveTo(-a,0);
+  for(let i=0;i<=seg;i++){const ang=Math.PI*i/seg;shape.lineTo(-a*Math.cos(ang),b*Math.sin(ang));}
+  shape.lineTo(a,0);
+  const hole=new THREE.Path();
+  const ai=a-t,bi=b-t;
+  hole.moveTo(-ai,0);
+  for(let i=0;i<=seg;i++){const ang=Math.PI*i/seg;hole.lineTo(-ai*Math.cos(ang),bi*Math.sin(ang));}
+  hole.lineTo(ai,0);
+  shape.holes.push(hole);
+  const geo=new THREE.ExtrudeGeometry(shape,{steps:1,depth:BL,bevelEnabled:false});
+  const mesh=new THREE.Mesh(geo,M.metal);mesh.position.set(BW/2,0,0);G.shell.add(mesh);
+  const cs=new THREE.Shape();cs.moveTo(-a,0);
+  for(let i=0;i<=seg;i++){const ang=Math.PI*i/seg;cs.lineTo(-a*Math.cos(ang),b*Math.sin(ang));}
+  cs.lineTo(a,0);
+  const cg=new THREE.ShapeGeometry(cs);
+  const cm=new THREE.Mesh(cg,M.glassFr);cm.position.set(BW/2,0,0.02);G.shell.add(cm);
+  const nm=new THREE.Mesh(cg.clone(),m(0x1a2530));nm.position.set(BW/2,0,BL-0.02);G.shell.add(nm);
+})();
+
+// ---- INTERIOR WALLS (divider) ----
+// No hard divider in this version — open plan
+
+// ---- WRESTLING MATS ----
+function mkMat(x,z,parent){
+  parent.add(bx(MS,0.06,MS, x+MS/2,0.03,z+MS/2, M.mat));
+  const c=new THREE.Mesh(new THREE.CylinderGeometry(3,3,0.01,12),M.gold);
+  c.position.set(x+MS/2,0.07,z+MS/2);parent.add(c);
+  const r=new THREE.Mesh(new THREE.TorusGeometry(5.8,0.07,6,20),M.gold);
+  r.rotation.x=-Math.PI/2;r.position.set(x+MS/2,0.07,z+MS/2);parent.add(r);
+}
+mkMat(BW/2-MS-3*F, 5*F, G.mats_train);
+mkMat(BW/2+3*F, 5*F, G.mats_train);
+mkMat(BW/2-MS/2, 5*F+MS+5*F, G.mats_train);
+mkMat(BW/2-MS/2, WZ/2-MS/2, G.mats_arena);
+
+// ---- TURF ----
+const TW=BW-20*F;
+G.turf.add(bx(TW,0.03,TZ_L, BW/2,0.015,TZ_S+TZ_L/2, M.turf));
+for(let y=0;y<=8;y++)G.turf.add(bx(TW-2,0.004,0.06, BW/2,0.035,TZ_S+y*15*F, M.white));
+
+// ---- S&C ----
+G.sc.add(bx(BW-10*F,0.03,SC_LEN, BW/2,0.015,SC_S+SC_LEN/2, M.rubber));
+for(let i=0;i<8;i++){
+  G.sc.add(bx(1.2,2.2,1.2, 8+i*7,1.1,SC_S+4, M.steel));
+  G.sc.add(bx(2,0.12,1.5, 8+i*7,0.06,SC_S+8, M.rubber));
+}
+G.sc.add(bx(0.6,1.2,18, BW-5,0.6,SC_S+SC_LEN/2, M.steel));
+for(let i=0;i<8;i++){
+  G.sc.add(bx(0.6,0.4,1.3, BW-8,0.2,SC_S+3+i*4, M.equip));
+  G.sc.add(bx(0.04,1,0.04, BW-8,0.9,SC_S+3+i*4-0.3, M.steel));
+  G.sc.add(bx(0.04,1,0.04, BW-8,0.9,SC_S+3+i*4+0.3, M.steel));
+}
+
+// ---- GARAGE DOORS ----
+for(let i=0;i<10;i++){
+  const z=i*BL/10+BL/20;
+  const g=new THREE.Mesh(new THREE.PlaneGeometry(BL/10-0.3,16*F),M.glass);
+  g.position.set(BW-0.15,8*F+1,z);g.rotation.y=Math.PI/2;G.garage.add(g);
+  G.garage.add(bx(BL/10-0.3,0.05,0.05, BW-0.1,16*F+1,z, M.door));
+  G.garage.add(bx(0.05,16*F,0.05, BW-0.1,8*F+1,i*BL/10, M.door));
+}
+
+// ---- OFFICE ----
+const ow=24*F,od=20*F;
+G.office.add(bx(ow,0.04,od, ow/2,0.02,od/2, M.office));
+G.office.add(bx(ow,12*F,0.1, ow/2,6*F,od, M.wall));
+G.office.add(bx(0.1,12*F,od, ow,6*F,od/2, M.wall));
+const vgl=new THREE.Mesh(new THREE.PlaneGeometry(ow-1,8*F),M.glass);
+vgl.position.set(ow/2,5*F,od+0.04);G.office.add(vgl);
+G.office.add(bx(ow,0.04,0.04, ow/2,9*F,od, M.door));
+
+// ---- ENTRANCE ----
+G.entrance.add(bx(4,4.5,0.15, BW*.4,2.25,-0.08, M.door));
+G.entrance.add(bx(4,4.5,0.15, BW*.55,2.25,-0.08, M.door));
+G.entrance.add(bx(16,3,0.08, BW/2,BH*.42,-0.2, M.sign));
+G.entrance.add(bx(17,0.05,0.1, BW/2,BH*.42-1.6,-0.22, M.door));
+
+// ============================================================
+// PLEX FLEX™ BEAMS (animated position via lerp)
+// ============================================================
+
+const beams=[]; // Array of {mesh, seatMesh, row, sec, baseX}
+
+for(let row=0;row<ROWS;row++){
+  const y=row*BEAM_H+BEAM_H/2;
+  for(let sec=0;sec<SECTIONS;sec++){
+    const z=sec*SEC_L+SEC_L/2;
+    const beam=new THREE.Mesh(new THREE.BoxGeometry(BEAM_L,BEAM_H,SEC_L-0.15),M.concrete);
+    beam.position.set(WALL_X,y,z);
+    const seat=new THREE.Mesh(new THREE.BoxGeometry(BEAM_L,0.05,SEC_L-0.15),M.concSeat);
+    seat.position.set(WALL_X,y+BEAM_H/2,z);
+    sc.add(beam);sc.add(seat);
+    beams.push({mesh:beam,seat:seat,row:row,sec:sec,
+      targetX:WALL_X, currentX:WALL_X});
+  }
+  // Track rail
+  G.tracks.add(bx(BEAM_L*2.5,0.06,0.06, WALL_X,y-BEAM_H/2+0.03,BL/2, M.track));
+}
+// Support columns
+for(let c=0;c<=6;c++){
+  const cz=c*BL/6;
+  G.tracks.add(bx(0.35,ROWS*BEAM_H+2,0.35, WALL_X+BEAM_L+2,(ROWS*BEAM_H)/2,cz, M.steel));
+  G.tracks.add(bx(0.35,ROWS*BEAM_H+2,0.35, WALL_X-BEAM_L-2,(ROWS*BEAM_H)/2,cz, M.steel));
+}
+
+// Beam positions for each FLEX mode
+function setBeamTargets(mode){
+  beams.forEach(b=>{
+    const stagger=b.row*0.15; // stepped for stadium look
+    if(mode==='full_in') b.targetX=WALL_X-BEAM_L/2-stagger;
+    else if(mode==='full_out') b.targetX=WALL_X+BEAM_L/2+stagger;
+    else if(mode==='half'){ b.targetX=WALL_X; } // centered on wall
+    else if(mode==='hidden') b.targetX=WALL_X; // stacked in wall
+  });
+}
+
+// ============================================================
+// CAMERA SYSTEM
+// ============================================================
+
+let tp=new THREE.Vector3(90,30,-50),tl=new THREE.Vector3(BW/2,5,BL*.3),cl=tl.clone();
+let orbT=0,orbP=0,mouseDown=false,lastMouse={x:0,y:0};
+
+const VIEWS=[
+  {p:[95,28,-42],t:[BW/2,5,BL*.3],n:"Exterior",d:"Quonset Hangar · 200' × 250' · 65' Peak"},
+  {p:[BW/2,5,WZ*.25],t:[BW/2,1.5,WZ*.5],n:"Wrestling Arena",d:"Three NCAA 42'×42' Regulation Mats"},
+  {p:[BW-5,10,BL*.4],t:[BW+8,6,BL*.4],n:"PLEX FLEX™ — Inside View",d:"16 Rows · 2,600 Seats Deployed Indoor"},
+  {p:[BW+18,10,BL*.4],t:[BW-2,6,BL*.4],n:"PLEX FLEX™ — Outside View",d:"Full Outdoor Stadium Configuration"},
+  {p:[BW-3,6,BL*.45],t:[BW+2,4,BL*.45],n:"PLEX FLEX™ — Transformation",d:"Watch The Beams Move Through The Wall"},
+  {p:[BW*.4,3,TZ_S+TZ_L*.35],t:[BW*.5,0.5,TZ_S+TZ_L*.5],n:"40-Yard Indoor Turf",d:"Sprint · Agility · Multi-Sport"},
+  {p:[12,4,SC_S+6],t:[BW*.4,2,SC_S+SC_LEN*.4],n:"Strength & Conditioning",d:"Power Racks · Platforms · Glass Walls"},
+  {p:[3,3,4],t:[6,2,8],n:"Office & Viewing",d:"Glass Wall · Parent Seating"},
+  {p:[BW/2,100,BL*.4],t:[BW/2,0,BL*.4],n:"Aerial Overview",d:"50,000 SF · Loudon/DeSarro Gymnasium"},
+];
+
+function setView(i){
+  const v=VIEWS[i];
+  tp.set(v.p[0],v.p[1],v.p[2]);
+  tl.set(v.t[0],v.t[1],v.t[2]);
+  document.getElementById('VN').textContent=v.n;
+  document.getElementById('VD').textContent=v.d;
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+}
+
+// ============================================================
+// ANIMATION SEQUENCES
+// ============================================================
+
+let animQueue=[], animActive=false, animTime=0;
+
+function queueAnim(steps){animQueue=steps;animActive=true;animTime=0;stepIdx=0;runNextStep()}
+let stepIdx=0, stepStart=0, currentStep=null;
+
+function runNextStep(){
+  if(stepIdx>=animQueue.length){animActive=false;showExploreNav();return}
+  currentStep=animQueue[stepIdx];
+  stepStart=performance.now();
+  if(currentStep.setup)currentStep.setup();
+  stepIdx++;
+}
+
+function updateAnim(now){
+  if(!animActive||!currentStep)return;
+  const elapsed=(now-stepStart)/1000;
+  const dur=currentStep.duration||3;
+  const t=Math.min(elapsed/dur,1);
+  if(currentStep.update)currentStep.update(t);
+  // Update progress bar
+  const totalDur=animQueue.reduce((s,st)=>s+(st.duration||3),0);
+  let elapsed_total=0;
+  for(let i=0;i<stepIdx-1;i++)elapsed_total+=animQueue[i].duration||3;
+  elapsed_total+=elapsed;
+  document.getElementById('pfill').style.width=Math.min(elapsed_total/totalDur*100,100)+'%';
+
+  if(t>=1){
+    if(currentStep.complete)currentStep.complete();
+    runNextStep();
+  }
+}
+
+function setPhase(name,desc){
+  document.getElementById('PN').textContent=name;
+  document.getElementById('PD').textContent=desc;
+}
+
+// ============================================================
+// BUILD SEQUENCE
+// ============================================================
+
+function startBuild(){
+  document.getElementById('hero').classList.add('off');
+  document.getElementById('hud').classList.add('on');
+  document.getElementById('cTop').classList.add('on');
+  document.getElementById('cBot').classList.add('on');
+
+  // Hide all beams initially
+  beams.forEach(b=>{b.mesh.visible=false;b.seat.visible=false});
+
+  queueAnim([
+    // 1. Ground & site
+    {duration:3,
+      setup(){setPhase('Phase 1','Site Preparation');G.ground.visible=true;
+        tp.set(80,50,BL*.3);tl.set(BW/2,0,BL*.4);},
+      update(t){cam.position.lerp(tp,0.04);cl.lerp(tl,0.04);cam.lookAt(cl)}
+    },
+    // 2. Foundation pour
+    {duration:4,
+      setup(){setPhase('Phase 2','Foundation · 50,000 SF Concrete Slab');
+        tp.set(70,20,-20);tl.set(BW/2,0,BL*.3);},
+      update(t){
+        if(!G.foundation.visible&&t>0.1)G.foundation.visible=true;
+        G.foundation.scale.y=Math.min(t*2,1);
+        cam.position.lerp(tp,0.03);cl.lerp(tl,0.03);cam.lookAt(cl);
+      }
+    },
+    // 3. Steel rises
+    {duration:5,
+      setup(){setPhase('Phase 3','Structural Steel · 11 Arch Ribs');
+        tp.set(90,25,-30);tl.set(BW/2,BH*.3,BL*.3);},
+      update(t){
+        if(!G.steel.visible&&t>0.05)G.steel.visible=true;
+        G.steel.scale.y=Math.min(t*1.5,1);
+        cam.position.lerp(tp,0.025);cl.lerp(tl,0.025);cam.lookAt(cl);
+      },
+      complete(){G.steel.scale.y=1}
+    },
+    // 4. Shell wraps
+    {duration:5,
+      setup(){setPhase('Phase 4','Building Shell · Quonset Arch Envelope');
+        tp.set(-30,20,BL*.3);tl.set(BW/2,BH*.4,BL*.4);},
+      update(t){
+        if(!G.shell.visible&&t>0.1)G.shell.visible=true;
+        // Reveal shell by adjusting opacity
+        M.metal.opacity=Math.min(t*2,1);M.metal.transparent=t<0.5;
+        cam.position.lerp(tp,0.02);cl.lerp(tl,0.02);cam.lookAt(cl);
+      },
+      complete(){M.metal.transparent=false;M.metal.opacity=1}
+    },
+    // 5. Entrance & exterior
+    {duration:3,
+      setup(){setPhase('Phase 5','Entrance · Signage');
+        G.entrance.visible=true;
+        tp.set(BW/2,12,-30);tl.set(BW/2,BH*.3,2);},
+      update(t){cam.position.lerp(tp,0.04);cl.lerp(tl,0.04);cam.lookAt(cl)}
+    },
+    // 6. Glass garage doors
+    {duration:4,
+      setup(){setPhase('Phase 6','Glass Garage Doors · Curved East Wall');
+        G.garage.visible=true;
+        tp.set(BW+20,12,BL*.4);tl.set(BW-2,8,BL*.4);},
+      update(t){cam.position.lerp(tp,0.03);cl.lerp(tl,0.03);cam.lookAt(cl)}
+    },
+    // 7. Interior — mats
+    {duration:4,
+      setup(){setPhase('Phase 7','NCAA Wrestling Mats · Competition Ready');
+        G.mats_train.visible=true;
+        tp.set(BW/2,8,WZ*.2);tl.set(BW/2,0.5,WZ*.5);},
+      update(t){cam.position.lerp(tp,0.035);cl.lerp(tl,0.035);cam.lookAt(cl)}
+    },
+    // 8. Turf
+    {duration:3,
+      setup(){setPhase('Phase 8','40-Yard Indoor Turf · Multi-Sport');
+        G.turf.visible=true;
+        tp.set(BW*.3,5,TZ_S+TZ_L*.3);tl.set(BW*.5,0,TZ_S+TZ_L*.5);},
+      update(t){cam.position.lerp(tp,0.04);cl.lerp(tl,0.04);cam.lookAt(cl)}
+    },
+    // 9. S&C
+    {duration:3,
+      setup(){setPhase('Phase 9','Strength & Conditioning · Elite Equipment');
+        G.sc.visible=true;
+        tp.set(15,4,SC_S+5);tl.set(BW*.4,2,SC_S+SC_LEN*.4);},
+      update(t){cam.position.lerp(tp,0.04);cl.lerp(tl,0.04);cam.lookAt(cl)}
+    },
+    // 10. Office
+    {duration:3,
+      setup(){setPhase('Phase 10','Office & Viewing Area');
+        G.office.visible=true;
+        tp.set(4,3,5);tl.set(8,2,10);},
+      update(t){cam.position.lerp(tp,0.04);cl.lerp(tl,0.04);cam.lookAt(cl)}
+    },
+    // 11. PLEX FLEX tracks
+    {duration:3,
+      setup(){setPhase('Phase 11','PLEX FLEX™ · Track System Installation');
+        G.tracks.visible=true;
+        tp.set(BW+15,15,BL*.5);tl.set(BW,ROWS*BEAM_H*.4,BL*.5);},
+      update(t){cam.position.lerp(tp,0.035);cl.lerp(tl,0.035);cam.lookAt(cl)}
+    },
+    // 12. PLEX FLEX beams deploy INSIDE
+    {duration:6,
+      setup(){setPhase('PLEX FLEX™','Deploying 2,600 Seats Inside');
+        setBeamTargets('full_in');
+        beams.forEach(b=>{b.mesh.visible=true;b.seat.visible=true;
+          b.mesh.position.x=WALL_X+BEAM_L/2+b.row*0.15; // start outside
+          b.seat.position.x=WALL_X+BEAM_L/2+b.row*0.15;
+          b.currentX=WALL_X+BEAM_L/2+b.row*0.15;
+        });
+        tp.set(BW-4,8,BL*.4);tl.set(BW+5,5,BL*.4);},
+      update(t){
+        // Staggered deployment — each row starts slightly later
+        beams.forEach(b=>{
+          const rowDelay=b.row*0.03;
+          const rt=Math.max(0,Math.min((t-rowDelay)/(1-rowDelay*ROWS/(ROWS+1)),1));
+          const eased=1-Math.pow(1-rt,2.5); // ease out
+          const x=b.currentX+(b.targetX-b.currentX)*eased;
+          b.mesh.position.x=x;b.seat.position.x=x;
+        });
+        cam.position.lerp(tp,0.02);cl.lerp(tl,0.02);cam.lookAt(cl);
+      },
+      complete(){beams.forEach(b=>{b.mesh.position.x=b.targetX;b.seat.position.x=b.targetX;b.currentX=b.targetX})}
+    },
+    // 13. Fly around full arena
+    {duration:5,
+      setup(){setPhase('Complete','Loudon / DeSarro Gymnasium · 50,000 SF');
+        tp.set(95,30,-40);tl.set(BW/2,5,BL*.3);},
+      update(t){cam.position.lerp(tp,0.025);cl.lerp(tl,0.025);cam.lookAt(cl)}
+    },
+  ]);
+}
+
+// ============================================================
+// EXPLORE MODE
+// ============================================================
+
+function enterExplore(){
+  document.getElementById('hero').classList.add('off');
+  document.getElementById('hud').classList.add('on');
+  // Show everything
+  Object.values(G).forEach(g=>g.visible=true);
+  G.mats_arena.visible=false;
+  G.flexHalf.visible=false;G.flexOut.visible=false;
+  // Show beams fully inside
+  beams.forEach(b=>{b.mesh.visible=true;b.seat.visible=true});
+  setBeamTargets('full_in');
+  beams.forEach(b=>{b.mesh.position.x=b.targetX;b.seat.position.x=b.targetX;b.currentX=b.targetX});
+  showExploreNav();
+  setView(0);
+}
+
+function showExploreNav(){
+  document.getElementById('cTop').classList.remove('on');
+  document.getElementById('cBot').classList.remove('on');
+  document.getElementById('phase').style.opacity='0';
+  // Build nav buttons
+  const nav=document.getElementById('navBar');
+  nav.innerHTML='';
+  const btns=[
+    ...VIEWS.map((v,i)=>({label:v.n.replace('PLEX FLEX™ — ',''),idx:i})),
+    {label:'⟳ FLEX: Inside',action:'full_in',gold:true},
+    {label:'⟳ FLEX: Half',action:'half',gold:true},
+    {label:'⟳ FLEX: Outside',action:'full_out',gold:true},
+    {label:'📷 Still Mode',action:'still'},
+    {label:'▶ Auto Tour',action:'tour'},
+  ];
+  btns.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='nb'+(b.gold?' gold':'');
+    btn.textContent=b.label;
+    btn.onclick=()=>{
+      if(b.idx!==undefined){stopTour();setView(b.idx)}
+      else if(b.action==='still')toggleStill();
+      else if(b.action==='tour')autoTour();
+      else if(b.action)animateFlex(b.action);
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// ============================================================
+// FLEX ANIMATION (smooth transform between modes)
+// ============================================================
+
+let flexAnimating=false;
+
+function animateFlex(mode){
+  if(flexAnimating)return;
+  flexAnimating=true;
+  // Capture current positions
+  beams.forEach(b=>b.currentX=b.mesh.position.x);
+  setBeamTargets(mode);
+  // Mats
+  if(mode==='full_in'){G.mats_train.visible=false;G.mats_arena.visible=true}
+  else{G.mats_train.visible=true;G.mats_arena.visible=false}
+
+  const start=performance.now();
+  const dur=4000; // 4 second transform
+
+  // Set camera to watch
+  if(mode==='full_in'){tp.set(BW-4,8,BL*.4);tl.set(BW-BEAM_L,5,BL*.4)}
+  else if(mode==='full_out'){tp.set(BW+18,10,BL*.4);tl.set(BW+BEAM_L,5,BL*.4)}
+  else{tp.set(BW+5,12,BL*.4);tl.set(BW,6,BL*.4)}
+
+  setPhase('PLEX FLEX™',mode==='full_in'?'Deploying Inside → 2,600 Arena Seats':mode==='full_out'?'Deploying Outside → Outdoor Stadium':'Split Configuration → Indoor + Outdoor');
+  document.getElementById('phase').style.opacity='1';
+
+  function step(){
+    const t=Math.min((performance.now()-start)/dur,1);
+    beams.forEach(b=>{
+      const rowDelay=b.row*0.025;
+      const rt=Math.max(0,Math.min((t-rowDelay)/(1-rowDelay),1));
+      const eased=1-Math.pow(1-rt,2.8);
+      const x=b.currentX+(b.targetX-b.currentX)*eased;
+      b.mesh.position.x=x;b.seat.position.x=x;
+    });
+    if(t<1)requestAnimationFrame(step);
+    else{
+      beams.forEach(b=>{b.mesh.position.x=b.targetX;b.seat.position.x=b.targetX;b.currentX=b.targetX});
+      flexAnimating=false;
+      setTimeout(()=>document.getElementById('phase').style.opacity='0',2000);
+    }
+  }
+  step();
+}
+
+// ============================================================
+// STILL PHOTO MODE
+// ============================================================
+
+let stillMode=false;
+function toggleStill(){
+  stillMode=!stillMode;
+  document.getElementById('still').classList.toggle('on',stillMode);
+  document.getElementById('cTop').classList.toggle('on',stillMode);
+  document.getElementById('cBot').classList.toggle('on',stillMode);
+}
+
+// ============================================================
+// AUTO TOUR
+// ============================================================
+
+let tourTimer=null;
+function autoTour(){
+  let i=0;
+  function nx(){setView(i%VIEWS.length);i++;tourTimer=setTimeout(nx,5000)}
+  nx();
+}
+function stopTour(){if(tourTimer)clearTimeout(tourTimer);tourTimer=null}
+
+// ============================================================
+// CONTROLS
+// ============================================================
+
+R.domElement.addEventListener('mousedown',e=>{mouseDown=true;lastMouse={x:e.clientX,y:e.clientY};stopTour()});
+R.domElement.addEventListener('mousemove',e=>{if(!mouseDown)return;orbT+=(e.clientX-lastMouse.x)*.003;orbP=Math.max(-.5,Math.min(.5,orbP+(e.clientY-lastMouse.y)*.003));lastMouse={x:e.clientX,y:e.clientY}});
+R.domElement.addEventListener('mouseup',()=>mouseDown=false);
+R.domElement.addEventListener('touchstart',e=>{mouseDown=true;lastMouse={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+R.domElement.addEventListener('touchmove',e=>{if(!mouseDown)return;orbT+=(e.touches[0].clientX-lastMouse.x)*.005;orbP=Math.max(-.5,Math.min(.5,orbP+(e.touches[0].clientY-lastMouse.y)*.005));lastMouse={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+R.domElement.addEventListener('touchend',()=>mouseDown=false);
+R.domElement.addEventListener('wheel',e=>{const d=cam.position.clone().sub(cl).normalize();tp.add(d.multiplyScalar(e.deltaY*.018))});
+
+// ============================================================
+// RENDER LOOP — 30fps cap
+// ============================================================
+
+let lastFrame=0;
+function render(now){
+  requestAnimationFrame(render);
+  if(now-lastFrame<32)return;lastFrame=now;
+
+  updateAnim(now);
+
+  const sp=0.05;
+  let fp=tp.clone();
+  if(orbT||orbP){
+    const off=cam.position.clone().sub(cl);
+    const r=off.length();
+    const th=Math.atan2(off.x,off.z)+orbT;
+    const ph=Math.max(.1,Math.min(1.4,Math.acos(off.y/r)+orbP));
+    fp.set(cl.x+r*Math.sin(ph)*Math.sin(th),cl.y+r*Math.cos(ph),cl.z+r*Math.sin(ph)*Math.cos(th));
+  }
+  cam.position.lerp(fp,sp);
+  cl.lerp(tl,sp);
+  cam.lookAt(cl);
+  orbT*=.92;orbP*=.92;
+  R.render(sc,cam);
+}
+render(0);
+
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)});
+window.startBuild=startBuild;window.enterExplore=enterExplore;
+</script>
+</body>
+</html>
