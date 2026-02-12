@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLEX FLEX™ — Loudon / DeSarro</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#060608;color:#fff;font-family:'Barlow',sans-serif;overflow:hidden}
+  #C{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+  #hud{position:fixed;z-index:5;top:0;left:0;width:100%;height:100%;pointer-events:none}
+  .bar{position:absolute;top:0;left:0;right:0;height:56px;background:linear-gradient(180deg,rgba(6,6,8,.8) 0%,transparent);display:flex;justify-content:space-between;align-items:center;padding:0 22px}
+  .brand{font-family:'Playfair Display';font-weight:700;font-size:13px}
+  .brand span{color:#d4af37}
+  .brand .badge{font-family:'Barlow Condensed';font-weight:400;font-size:9px;letter-spacing:2px;color:rgba(212,175,55,0.4);margin-left:6px;border:1px solid rgba(212,175,55,0.15);padding:2px 5px}
+  .tinf{font-family:'Barlow Condensed';font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.18)}
+  #lbl{position:absolute;top:62px;left:50%;transform:translateX(-50%);text-align:center}
+  .ln{font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#d4af37}
+  .ld{font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px}
+  #vl{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);text-align:center}
+  .vn{font-family:'Playfair Display';font-weight:700;font-size:18px;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  .vd{font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;color:#d4af37;margin-top:3px;text-transform:uppercase}
+  .nav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:4px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:96vw}
+  .nb{padding:7px 12px;background:rgba(6,6,8,.6);border:1px solid rgba(212,175,55,.1);color:rgba(255,255,255,.35);font-family:'Barlow Condensed';font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .nb:hover,.nb.on{background:rgba(212,175,55,.08);border-color:rgba(212,175,55,.3);color:#d4af37}
+  .nb.gold{background:rgba(212,175,55,.12);border-color:#d4af37;color:#d4af37}
+  .back{position:absolute;top:14px;left:12px;pointer-events:auto}
+  .back a{font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-decoration:none}
+  .back a:hover{color:#d4af37}
+</style>
+</head>
+<body>
+<div id="C"></div>
+<div id="hud">
+  <div class="bar">
+    <div class="brand">Loudon / <span>DeSarro</span><span class="badge">PLEX FLEX™</span></div>
+    <div class="tinf">Retractable Concrete Beam System · 16 Rows · 2,600 Seats</div>
+  </div>
+  <div class="back"><a href="index.html">← Back</a></div>
+  <div id="lbl"><div class="ln" id="PN">Ready</div><div class="ld" id="PD">Select a configuration below</div></div>
+  <div id="vl"><div class="vn" id="VN">PLEX FLEX™</div><div class="vd" id="VD">Retractable Concrete Beam Bleacher System</div></div>
+  <div class="nav">
+    <button class="nb gold" onclick="doFlex('full_in')">⟳ Deploy Inside</button>
+    <button class="nb gold" onclick="doFlex('half')">⟳ Half & Half</button>
+    <button class="nb gold" onclick="doFlex('full_out')">⟳ Deploy Outside</button>
+    <button class="nb" onclick="camView(0)">Inside View</button>
+    <button class="nb" onclick="camView(1)">Wall Cutaway</button>
+    <button class="nb" onclick="camView(2)">Outside View</button>
+    <button class="nb" onclick="camView(3)">Aerial</button>
+    <button class="nb" onclick="camView(4)">Side Profile</button>
+    <button class="nb" onclick="fullDemo()">▶ Full Demo</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const F=.3048,BW=200*F,BL=250*F,BH=65*F;
+const BEAM_L=20*F,BEAM_H=2.5*F,ROWS=16,SECS=12,SEC_L=BL/SECS,WX=BW;
+
+const R=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});
+R.setSize(innerWidth,innerHeight);R.setPixelRatio(1);
+R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
+document.getElementById('C').appendChild(R.domElement);
+
+const sc=new THREE.Scene();sc.background=new THREE.Color(0x0a0e14);
+const cam=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.5,500);
+
+sc.add(new THREE.AmbientLight(0x506080,0.45));
+sc.add(new THREE.HemisphereLight(0x8ecae6,0x2a1f0a,0.5));
+const sun=new THREE.DirectionalLight(0xfff0d0,1.5);sun.position.set(60,80,40);sc.add(sun);
+[{x:BW*.8,y:8,z:BL*.3},{x:BW*.8,y:8,z:BL*.6},{x:BW+10,y:6,z:BL*.5}].forEach(l=>{
+  const p=new THREE.PointLight(0xffeedd,0.8,50);p.position.set(l.x,l.y,l.z);sc.add(p);
+});
+
+const m=(c,o)=>new THREE.MeshLambertMaterial({color:c,...(o||{})});
+const M={
+  metal:m(0x2a3848),slab:m(0x7a7a78),steel:m(0x484848),
+  concrete:m(0x8a8a85),seat:m(0x9a9a95),track:m(0x555555),
+  gold:m(0xd4af37),field:m(0x1a5a20),ground:m(0x1e2a16),
+  glass:m(0x88ccee,{transparent:true,opacity:0.12}),
+  mat:m(0xa01020),
+};
+
+function bx(w,h,d,x,y,z,mt){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mt);o.position.set(x,y,z);sc.add(o);return o}
+
+// Ground + field
+bx(400,0.01,400, BW/2,-0.3,BL/2, M.ground);
+bx(BW,0.15,BL, BW/2,-0.08,BL/2, M.slab);
+bx(50,0.04,BL, BW+25,-0.18,BL/2, M.field);
+
+// Partial shell (just east side for context)
+(function(){
+  const a=BW/2,b=BH,seg=20;
+  const shape=new THREE.Shape();
+  shape.moveTo(-a,0);
+  for(let i=0;i<=seg;i++){const ang=Math.PI*i/seg;shape.lineTo(-a*Math.cos(ang),b*Math.sin(ang));}
+  shape.lineTo(a,0);
+  const hole=new THREE.Path();
+  const ai=a-.5,bi=b-.5;
+  hole.moveTo(-ai,0);
+  for(let i=0;i<=seg;i++){const ang=Math.PI*i/seg;hole.lineTo(-ai*Math.cos(ang),bi*Math.sin(ang));}
+  hole.lineTo(ai,0);
+  shape.holes.push(hole);
+  const geo=new THREE.ExtrudeGeometry(shape,{steps:1,depth:BL,bevelEnabled:false});
+  const mesh=new THREE.Mesh(geo,M.metal);mesh.position.set(BW/2,0,0);
+  mesh.material.transparent=true;mesh.material.opacity=0.3;
+  sc.add(mesh);
+})();
+
+// Ribs
+for(let f=0;f<=10;f++){
+  const z=f*25*F,seg=16,pts=[];
+  for(let i=0;i<=seg;i++){const ang=Math.PI*i/seg;pts.push(new THREE.Vector3(-BW/2*Math.cos(ang)+BW/2,BH*Math.sin(ang),z));}
+  sc.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),seg,0.1,4,false),M.steel));
+}
+
+// Wrestling mat for context
+bx(42*F,0.05,42*F, BW/2,0.025,40*F, M.mat);
+
+// Track rails
+for(let row=0;row<ROWS;row++){
+  const y=row*BEAM_H+0.03;
+  bx(BEAM_L*2.5,0.05,0.05, WX,y,BL/2, M.track);
+}
+
+// Support columns
+for(let c=0;c<=6;c++){
+  const cz=c*BL/6;
+  bx(0.3,ROWS*BEAM_H+2,0.3, WX+BEAM_L+2,(ROWS*BEAM_H)/2,cz, M.steel);
+  bx(0.3,ROWS*BEAM_H+2,0.3, WX-BEAM_L-2,(ROWS*BEAM_H)/2,cz, M.steel);
+}
+
+// BEAMS
+const beams=[];
+for(let row=0;row<ROWS;row++){
+  const y=row*BEAM_H+BEAM_H/2;
+  for(let sec=0;sec<SECS;sec++){
+    const z=sec*SEC_L+SEC_L/2;
+    const bm=new THREE.Mesh(new THREE.BoxGeometry(BEAM_L,BEAM_H,SEC_L-0.15),M.concrete);
+    bm.position.set(WX,y,z);
+    const st=new THREE.Mesh(new THREE.BoxGeometry(BEAM_L,0.05,SEC_L-0.15),M.seat);
+    st.position.set(WX,y+BEAM_H/2,z);
+    sc.add(bm);sc.add(st);
+    beams.push({m:bm,s:st,row,sec,tx:WX,cx:WX});
+  }
+}
+
+function setTargets(mode){
+  beams.forEach(b=>{
+    const stag=b.row*0.15;
+    if(mode==='full_in')b.tx=WX-BEAM_L/2-stag;
+    else if(mode==='full_out')b.tx=WX+BEAM_L/2+stag;
+    else if(mode==='half')b.tx=WX;
+  });
+}
+
+// Start with beams inside
+setTargets('full_in');
+beams.forEach(b=>{b.m.position.x=b.tx;b.s.position.x=b.tx;b.cx=b.tx});
+
+// Camera
+let tp=new THREE.Vector3(BW-4,10,BL*.4),tl=new THREE.Vector3(BW+5,5,BL*.4),cl=tl.clone();
+let orbT=0,orbP=0,md=false,lm={x:0,y:0};
+
+const CAMS=[
+  {p:[BW-4,10,BL*.4],t:[BW-BEAM_L,5,BL*.4],n:"Inside View",d:"2,600 Seats Deployed Indoor"},
+  {p:[BW,8,BL*.4],t:[BW+3,5,BL*.4],n:"Wall Cutaway",d:"Beams Pass Through The Curved Wall"},
+  {p:[BW+22,10,BL*.4],t:[BW+2,5,BL*.4],n:"Outside View",d:"Outdoor Stadium · Facing The Field"},
+  {p:[BW,60,BL*.4],t:[BW,0,BL*.4],n:"Aerial",d:"Full System · 16 Rows × 250' Long"},
+  {p:[BW+5,8,0],t:[BW,5,BL*.3],n:"Side Profile",d:"Stepped Seating · 40' High"},
+];
+
+function camView(i){
+  const c=CAMS[i];
+  tp.set(c.p[0],c.p[1],c.p[2]);tl.set(c.t[0],c.t[1],c.t[2]);
+  document.getElementById('VN').textContent=c.n;
+  document.getElementById('VD').textContent=c.d;
+}
+
+let flexing=false;
+function doFlex(mode){
+  if(flexing)return;flexing=true;
+  beams.forEach(b=>b.cx=b.m.position.x);
+  setTargets(mode);
+  const label=mode==='full_in'?'Deploying Inside → 2,600 Arena Seats':mode==='full_out'?'Deploying Outside → Outdoor Stadium':'Split → Indoor + Outdoor';
+  document.getElementById('PN').textContent='TRANSFORMING';
+  document.getElementById('PD').textContent=label;
+
+  // Auto camera
+  if(mode==='full_in'){tp.set(BW-4,10,BL*.4);tl.set(BW-BEAM_L,5,BL*.4)}
+  else if(mode==='full_out'){tp.set(BW+22,10,BL*.4);tl.set(BW+2,5,BL*.4)}
+  else{tp.set(BW+5,12,BL*.4);tl.set(BW,6,BL*.4)}
+
+  const start=performance.now(),dur=4500;
+  (function step(){
+    const t=Math.min((performance.now()-start)/dur,1);
+    beams.forEach(b=>{
+      const rd=b.row*0.025;
+      const rt=Math.max(0,Math.min((t-rd)/(1-rd),1));
+      const e=1-Math.pow(1-rt,2.8);
+      const x=b.cx+(b.tx-b.cx)*e;
+      b.m.position.x=x;b.s.position.x=x;
+    });
+    if(t<1)requestAnimationFrame(step);
+    else{
+      beams.forEach(b=>{b.m.position.x=b.tx;b.s.position.x=b.tx;b.cx=b.tx});
+      flexing=false;
+      document.getElementById('PN').textContent=mode==='full_in'?'FULL ARENA':mode==='full_out'?'FULL OUTDOOR':'HALF & HALF';
+      document.getElementById('PD').textContent=mode==='full_in'?'2,600 seats deployed inside':mode==='full_out'?'2,600 outdoor stadium seats':'1,300 inside + 1,300 outside';
+    }
+  })();
+}
+
+function fullDemo(){
+  doFlex('full_in');
+  setTimeout(()=>{camView(0)},100);
+  setTimeout(()=>{doFlex('half');camView(1)},5500);
+  setTimeout(()=>{doFlex('full_out');camView(2)},11000);
+  setTimeout(()=>{doFlex('full_in');camView(0)},16500);
+}
+
+// Controls
+R.domElement.addEventListener('mousedown',e=>{md=true;lm={x:e.clientX,y:e.clientY}});
+R.domElement.addEventListener('mousemove',e=>{if(!md)return;orbT+=(e.clientX-lm.x)*.003;orbP=Math.max(-.5,Math.min(.5,orbP+(e.clientY-lm.y)*.003));lm={x:e.clientX,y:e.clientY}});
+R.domElement.addEventListener('mouseup',()=>md=false);
+R.domElement.addEventListener('touchstart',e=>{md=true;lm={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+R.domElement.addEventListener('touchmove',e=>{if(!md)return;orbT+=(e.touches[0].clientX-lm.x)*.005;orbP=Math.max(-.5,Math.min(.5,orbP+(e.touches[0].clientY-lm.y)*.005));lm={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+R.domElement.addEventListener('touchend',()=>md=false);
+R.domElement.addEventListener('wheel',e=>{const d=cam.position.clone().sub(cl).normalize();tp.add(d.multiplyScalar(e.deltaY*.018))});
+
+let last=0;
+function anim(t){
+  requestAnimationFrame(anim);
+  if(t-last<32)return;last=t;
+  let fp=tp.clone();
+  if(orbT||orbP){
+    const off=cam.position.clone().sub(cl);const r=off.length();
+    const th=Math.atan2(off.x,off.z)+orbT;
+    const ph=Math.max(.1,Math.min(1.4,Math.acos(off.y/r)+orbP));
+    fp.set(cl.x+r*Math.sin(ph)*Math.sin(th),cl.y+r*Math.cos(ph),cl.z+r*Math.sin(ph)*Math.cos(th));
+  }
+  cam.position.lerp(fp,.05);cl.lerp(tl,.05);cam.lookAt(cl);
+  orbT*=.92;orbP*=.92;
+  R.render(sc,cam);
+}
+anim(0);
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)});
+window.doFlex=doFlex;window.camView=camView;window.fullDemo=fullDemo;
+</script>
+</body>
+</html>
