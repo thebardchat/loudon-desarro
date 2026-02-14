@@ -71,7 +71,9 @@
       field:     makeMat(0x1a5a20),
       rectWall:  makeMat(0x3a4555),
       rectRoof:  makeMat(0x2a3040),
-      partition: makeMat(0x77aacc, { transparent: true, opacity: 0.14, side: THREE.DoubleSide })
+      partition: makeMat(0x77aacc, { transparent: true, opacity: 0.14, side: THREE.DoubleSide }),
+      archSkin:  makeMat(0x6a7585, { side: THREE.DoubleSide }),
+      glassCap:  makeMat(0x88ccee, { transparent: true, opacity: 0.28, side: THREE.DoubleSide })
     };
   }
 
@@ -374,7 +376,7 @@
         p: [BW - 12, 6, BL * 0.45],
         t: [BW + 4, 4, BL * 0.45],
         n: 'PLEX FLEX\u2122 \u2014 Inside View',
-        d: '16 Rows \u00b7 2,600 Seats \u00b7 Deploy Outward'
+        d: '16 Rows \u00b7 2,500 Seats \u00b7 Deploy Outward'
       },
       {
         p: [BW + BEAM_L + 8, 10, BL * 0.4],
@@ -681,7 +683,7 @@
         FT: FT, BW: BW, BL: BL, ENT_DEPTH: ENT_DEPTH,
         TURF_W: TURF_W, WRESTLE_W: WRESTLE_W, WRESTLE_D: WRESTLE_D,
         SC_Z: SC_Z, SC_W: SC_W, SC_D: SC_D, WALL_X: WALL_X
-      });
+      }, G);
       if (shellGroup) {
         G.shell.add(shellGroup);
       }

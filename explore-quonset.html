@@ -115,7 +115,7 @@
 // ============================================================
 // QUONSET ARCH SHELL — 200' x 250' x 65' peak
 // ============================================================
-FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
+FacilityCore.init(document.getElementById('C'), function(scene, M, D, G) {
   var FT = D.FT, BW = D.BW, BL = D.BL;
   var BH = 65 * FT; // 65' peak height
   var group = new THREE.Group();
@@ -135,10 +135,7 @@ FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
     }
     var curve = new THREE.CatmullRomCurve3(pts);
     var tube = new THREE.Mesh(new THREE.TubeGeometry(curve, seg, 0.14, 4, false), M.steel);
-    scene.children.forEach(function(c) {
-      // Add to steel group if it exists
-    });
-    group.add(tube);
+    G.steel.add(tube);
   }
 
   // Shell skin (extruded arch profile)
@@ -162,7 +159,7 @@ FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
   shape.holes.push(hole);
 
   var shellGeo = new THREE.ExtrudeGeometry(shape, { steps: 1, depth: BL, bevelEnabled: false });
-  var shellMesh = new THREE.Mesh(shellGeo, M.metal);
+  var shellMesh = new THREE.Mesh(shellGeo, M.archSkin);
   shellMesh.position.set(BW / 2, 0, 0);
   group.add(shellMesh);
 
@@ -175,12 +172,12 @@ FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
   }
   capShape.lineTo(a, 0);
   var capGeo = new THREE.ShapeGeometry(capShape);
-  var frontCap = new THREE.Mesh(capGeo, M.glassFr);
+  var frontCap = new THREE.Mesh(capGeo, M.glassCap);
   frontCap.position.set(BW / 2, 0, 0.05);
   group.add(frontCap);
 
   // Back end cap (solid)
-  var backCap = new THREE.Mesh(capGeo.clone(), M.metal);
+  var backCap = new THREE.Mesh(capGeo.clone(), M.archSkin);
   backCap.position.set(BW / 2, 0, BL - 0.05);
   group.add(backCap);
 

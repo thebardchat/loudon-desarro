@@ -115,7 +115,7 @@
 // ============================================================
 // RECTANGULAR STEEL SHELL — 200' x 250' x 40' eave
 // ============================================================
-FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
+FacilityCore.init(document.getElementById('C'), function(scene, M, D, G) {
   var FT = D.FT, BW = D.BW, BL = D.BL;
   var BH = 40 * FT; // 40' eave height
   var group = new THREE.Group();
@@ -132,7 +132,7 @@ FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
         M.steel
       );
       col.position.set(x * colSpacingX, BH / 2, z * colSpacingZ);
-      group.add(col);
+      G.steel.add(col);
     }
   }
 
@@ -204,7 +204,7 @@ FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
       M.steel
     );
     truss.position.set(BW / 2, BH - 0.5, tz);
-    group.add(truss);
+    G.steel.add(truss);
     // diagonal braces
     var braceL = new THREE.Mesh(
       new THREE.BoxGeometry(0.06, 2, 0.06),
@@ -212,14 +212,14 @@ FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
     );
     braceL.position.set(2, BH - 1.5, tz);
     braceL.rotation.z = 0.3;
-    group.add(braceL);
+    G.steel.add(braceL);
     var braceR = new THREE.Mesh(
       new THREE.BoxGeometry(0.06, 2, 0.06),
       M.steel
     );
     braceR.position.set(BW - 2, BH - 1.5, tz);
     braceR.rotation.z = -0.3;
-    group.add(braceR);
+    G.steel.add(braceR);
   }
 
   // Gutter/fascia trim
