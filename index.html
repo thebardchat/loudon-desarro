@@ -3,45 +3,353 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loudon / DeSarro Gymnasium</title>
+<title>Loudon / DeSarro Athletic Complex — Hazel Green, Alabama</title>
+<meta name="description" content="50,000 SF multi-sport athletic complex honoring two wrestling legends. Filling the gap between Birmingham and Nashville. Hazel Green, Alabama.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap');
+  :root{
+    --gold:#d4af37;--gold-dim:rgba(212,175,55,0.6);--gold-bg:rgba(212,175,55,0.06);
+    --bg:#060608;--bg2:#0a0e14;--text:#e8e6e0;--muted:rgba(255,255,255,0.35);
+    --border:rgba(255,255,255,0.08);
+  }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#060608;color:#fff;font-family:'Barlow',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
-  .loc{font-family:'Barlow Condensed';font-weight:300;font-size:12px;letter-spacing:7px;text-transform:uppercase;color:rgba(212,175,55,0.6);margin-bottom:16px}
-  h1{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,8vw,80px);line-height:.9;text-align:center}
-  h1 em{font-style:italic;font-weight:400;color:#d4af37;display:block;font-size:.3em;letter-spacing:5px;margin-top:8px;font-family:'Barlow Condensed';text-transform:uppercase}
-  .sub{font-family:'Barlow Condensed';font-size:13px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-top:12px}
-  .desc{font-weight:300;font-size:15px;color:rgba(255,255,255,0.3);margin-top:24px;text-align:center;max-width:520px;line-height:1.7}
-  .stats{display:flex;gap:32px;margin-top:36px;flex-wrap:wrap;justify-content:center}
-  .sv{font-family:'Playfair Display';font-weight:700;font-size:28px;color:#d4af37;text-align:center}
-  .sl{font-family:'Barlow Condensed';font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);text-align:center;margin-top:2px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:44px;width:100%;max-width:880px}
-  a.card{background:rgba(212,175,55,0.04);border:1px solid rgba(212,175,55,0.12);padding:24px 20px;text-decoration:none;color:#fff;transition:all .3s;display:flex;flex-direction:column;gap:6px}
-  a.card:hover{background:rgba(212,175,55,0.08);border-color:rgba(212,175,55,0.35);transform:translateY(-2px)}
-  .ct{font-family:'Playfair Display';font-weight:700;font-size:17px}
-  .cd{font-weight:300;font-size:12px;color:rgba(255,255,255,0.3);line-height:1.5}
-  .ctag{font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#d4af37;margin-top:auto;padding-top:10px}
-  .foot{margin-top:50px;font-family:'Barlow Condensed';font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.1)}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;line-height:1.7;overflow-x:hidden}
+  a{color:var(--gold);text-decoration:none;transition:color .2s}
+  a:hover{color:#f0d060}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;transition:background .3s}
+  nav.scrolled{background:rgba(6,6,8,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-brand{font-family:'Playfair Display';font-weight:700;font-size:15px;color:#fff}
+  .nav-brand span{color:var(--gold)}
+  .nav-links{display:flex;gap:24px}
+  .nav-links a{font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+  .nav-links a:hover{color:var(--gold)}
+
+  /* HERO */
+  #hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(212,175,55,0.06) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(100,60,20,0.05) 0%,transparent 50%)}
+  .hero-loc{font-family:'Barlow Condensed';font-weight:300;font-size:12px;letter-spacing:7px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:16px;position:relative;z-index:1}
+  .hero-name{font-family:'Playfair Display';font-weight:900;font-size:clamp(32px,8vw,80px);line-height:.9;position:relative;z-index:1}
+  .hero-name em{font-style:italic;font-weight:400;color:var(--gold);display:block;font-size:.3em;letter-spacing:5px;margin-top:10px;font-family:'Barlow Condensed';text-transform:uppercase}
+  .hero-tag{font-weight:300;font-size:clamp(14px,2vw,18px);color:var(--muted);margin-top:24px;max-width:600px;line-height:1.7;position:relative;z-index:1}
+  .hero-stats{display:flex;gap:32px;margin-top:40px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+  .stat-val{font-family:'Playfair Display';font-weight:700;font-size:28px;color:var(--gold);text-align:center}
+  .stat-lbl{font-family:'Barlow Condensed';font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:2px}
+  .hero-btns{display:flex;gap:12px;margin-top:40px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+  .btn{padding:14px 40px;border:1px solid rgba(212,175,55,0.35);color:var(--gold);font-family:'Barlow Condensed';font-size:11px;font-weight:500;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .3s;background:0;text-decoration:none;display:inline-block}
+  .btn:hover{background:var(--gold);color:#0a0a0a}
+  .btn.pri{background:rgba(212,175,55,0.08);border-color:rgba(212,175,55,0.5)}
+
+  /* SECTIONS */
+  section{padding:80px 24px;max-width:1000px;margin:0 auto}
+  .sec-label{font-family:'Barlow Condensed';font-weight:300;font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--gold-dim);text-align:center;margin-bottom:8px}
+  .sec-title{font-family:'Playfair Display';font-weight:800;font-size:clamp(24px,5vw,42px);text-align:center;margin-bottom:16px}
+  .sec-sub{font-weight:300;font-size:15px;color:var(--muted);text-align:center;max-width:650px;margin:0 auto 48px;line-height:1.7}
+  .divider{width:60px;height:1px;background:rgba(212,175,55,0.3);margin:0 auto 48px}
+
+  /* THE GAP */
+  .gap-visual{display:flex;align-items:center;justify-content:center;gap:0;margin:40px auto;max-width:700px;flex-wrap:wrap}
+  .gap-city{text-align:center;flex:0 0 auto;padding:0 20px}
+  .gap-city .name{font-family:'Playfair Display';font-weight:700;font-size:18px}
+  .gap-city .detail{font-family:'Barlow Condensed';font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+  .gap-line{flex:1;min-width:60px;height:1px;background:linear-gradient(90deg,rgba(212,175,55,0.3),rgba(212,175,55,0.05));position:relative}
+  .gap-line .gap-label{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-family:'Barlow Condensed';font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+  .gap-center{text-align:center;flex:0 0 auto;padding:0 16px}
+  .gap-center .pin{font-size:28px;display:block}
+  .gap-center .name{font-family:'Playfair Display';font-weight:800;font-size:20px;color:var(--gold)}
+  .gap-center .detail{font-family:'Barlow Condensed';font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+
+  .opportunity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:40px}
+  .opp-card{background:var(--gold-bg);border:1px solid var(--border);padding:28px 24px;transition:border-color .2s}
+  .opp-card:hover{border-color:rgba(212,175,55,0.3)}
+  .opp-num{font-family:'Playfair Display';font-weight:700;font-size:32px;color:var(--gold)}
+  .opp-label{font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+  .opp-desc{font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;line-height:1.5}
+
+  /* FACILITY */
+  .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .feature{background:var(--bg2);border:1px solid var(--border);padding:32px 28px;transition:border-color .3s,transform .3s}
+  .feature:hover{border-color:rgba(212,175,55,0.25);transform:translateY(-2px)}
+  .feature h3{font-family:'Playfair Display';font-weight:700;font-size:18px;margin-bottom:8px}
+  .feature .accent{color:var(--gold);font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:block}
+  .feature p{font-size:14px;color:var(--muted);line-height:1.6}
+
+  /* LEGACY */
+  .legacy-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .legacy-card{border:1px solid var(--border);padding:36px 32px;position:relative}
+  .legacy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold)}
+  .legacy-card .title{font-family:'Barlow Condensed';font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:8px}
+  .legacy-card h3{font-family:'Playfair Display';font-weight:700;font-size:22px;margin-bottom:12px}
+  .legacy-card p{font-size:14px;color:var(--muted);line-height:1.7}
+
+  /* DEMOS */
+  .demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .demo-card{background:var(--gold-bg);border:1px solid var(--border);padding:28px 24px;text-decoration:none;color:#fff;transition:all .3s;display:block}
+  .demo-card:hover{border-color:var(--gold);background:rgba(212,175,55,0.1);transform:translateY(-3px)}
+  .demo-card h3{font-family:'Playfair Display';font-weight:700;font-size:17px;margin-bottom:6px}
+  .demo-card p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+  .demo-card .cta{font-family:'Barlow Condensed';font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+
+  /* VISION */
+  .vision-text{max-width:680px;margin:0 auto;text-align:center}
+  .vision-text p{font-size:16px;color:var(--muted);line-height:1.8;margin-bottom:20px}
+  .vision-text strong{color:var(--text)}
+  .quote{font-family:'Playfair Display';font-style:italic;font-size:clamp(18px,3vw,26px);color:var(--text);margin:32px auto;max-width:600px;text-align:center;line-height:1.5}
+  .quote-attr{font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);text-align:center;margin-top:12px}
+
+  /* CTA */
+  .cta-section{text-align:center;padding:80px 24px;border-top:1px solid var(--border)}
+  .cta-section h2{font-family:'Playfair Display';font-weight:800;font-size:clamp(22px,4vw,36px);margin-bottom:16px}
+  .cta-section p{color:var(--muted);margin-bottom:32px;font-size:15px}
+
+  /* FOOTER */
+  footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border)}
+  footer p{font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.12)}
+
+  /* FADE-IN */
+  .fade{opacity:0;transform:translateY(16px);transition:opacity .7s,transform .7s}
+  .fade.vis{opacity:1;transform:translateY(0)}
+
+  /* RESPONSIVE */
+  @media(max-width:768px){
+    .nav-links{gap:12px}
+    .nav-links a{font-size:10px;letter-spacing:2px}
+    .hero-stats{gap:20px}
+    .legacy-grid{grid-template-columns:1fr}
+    .gap-visual{flex-direction:column;gap:16px}
+    .gap-line{width:1px;min-width:1px;height:40px;background:linear-gradient(180deg,rgba(212,175,55,0.3),rgba(212,175,55,0.05))}
+    .gap-line .gap-label{top:50%;left:auto;right:-70px;transform:translateY(-50%);writing-mode:vertical-rl}
+    section{padding:60px 20px}
+  }
+  @media(max-width:480px){
+    nav{padding:12px 16px}
+    .nav-brand{font-size:13px}
+    .hero-btns{flex-direction:column;align-items:center}
+    .btn{width:100%;max-width:280px;text-align:center}
+  }
 </style>
 </head>
 <body>
-  <div class="loc">Hazel Green · Alabama</div>
-  <h1>Loudon / DeSarro<em>Gymnasium</em></h1>
-  <div class="sub">featuring PLEX FLEX™ Retractable Arena System</div>
-  <p class="desc">50,000 SF of transformable athletic architecture — the world's first retractable concrete beam bleacher system.</p>
-  <div class="stats">
-    <div><div class="sv">50,000</div><div class="sl">Square Feet</div></div>
-    <div><div class="sv">2,600</div><div class="sl">Seats</div></div>
-    <div><div class="sv">NCAA</div><div class="sl">Wrestling</div></div>
-    <div><div class="sv">40 yd</div><div class="sl">Indoor Turf</div></div>
-    <div><div class="sv">200×250</div><div class="sl">Footprint</div></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">Loudon / <span>DeSarro</span></div>
+  <div class="nav-links">
+    <a href="#opportunity">The Gap</a>
+    <a href="#facility">Facility</a>
+    <a href="#legacy">Legacy</a>
+    <a href="#explore">Explore</a>
+    <a href="#vision">Vision</a>
   </div>
-  <div class="grid">
-    <a class="card" href="plexflex.html"><div class="ct">⚡ PLEX FLEX™ Demo</div><div class="cd">Watch 2,600 seats slide through the wall. Full inside, half & half, full outside.</div><div class="ctag">The Money Shot →</div></a>
-    <a class="card" href="explore.html"><div class="ct">🏟️ Full Facility</div><div class="cd">Complete 3D walkthrough. All zones, all angles, drag to explore.</div><div class="ctag">Interactive 3D →</div></a>
-    <a class="card" href="floorplan.html"><div class="ct">📐 Floor Plan</div><div class="cd">Birds-eye layout. Entrance flow, zones, outdoor field, parking.</div><div class="ctag">Layout Overview →</div></a>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="max-width:none">
+  <div class="hero-bg"></div>
+  <div class="hero-loc fade">Hazel Green &middot; Alabama</div>
+  <h1 class="hero-name fade">Loudon / DeSarro<em>Athletic Complex</em></h1>
+  <p class="hero-tag fade">50,000 square feet of transformable athletic architecture — filling the gap between Birmingham and Nashville with a world-class training facility for the next generation.</p>
+  <div class="hero-stats fade">
+    <div><div class="stat-val">50,000</div><div class="stat-lbl">Square Feet</div></div>
+    <div><div class="stat-val">2,600</div><div class="stat-lbl">Seats</div></div>
+    <div><div class="stat-val">NCAA</div><div class="stat-lbl">Wrestling</div></div>
+    <div><div class="stat-val">40 yd</div><div class="stat-lbl">Indoor Turf</div></div>
+    <div><div class="stat-val">FLEX&trade;</div><div class="stat-lbl">Plex Flex</div></div>
   </div>
-  <div class="foot">Loudon / DeSarro · PLEX FLEX™ · Hazel Green, AL</div>
+  <div class="hero-btns fade">
+    <a href="explore.html" class="btn pri">Explore in 3D &rarr;</a>
+    <a href="#opportunity" class="btn">The Opportunity</a>
+    <a href="plexflex.html" class="btn">PLEX FLEX&trade; Demo</a>
+  </div>
+</section>
+
+<!-- THE GAP — MARKET OPPORTUNITY -->
+<section id="opportunity">
+  <div class="sec-label fade">The Market Gap</div>
+  <h2 class="sec-title fade">190 Miles of Untapped Opportunity</h2>
+  <p class="sec-sub fade">Wrestling is booming in Birmingham. It's massive in Nashville. But between them? Nothing. No dedicated multi-sport training complex serves North Alabama's explosive youth athletics corridor.</p>
+
+  <div class="gap-visual fade">
+    <div class="gap-city">
+      <div class="name">Birmingham</div>
+      <div class="detail">Established Wrestling Scene</div>
+    </div>
+    <div class="gap-line"><div class="gap-label">95 miles &middot; No Facility</div></div>
+    <div class="gap-center">
+      <span class="pin">&#9733;</span>
+      <div class="name">Hazel Green</div>
+      <div class="detail">On the State Line</div>
+    </div>
+    <div class="gap-line"><div class="gap-label">95 miles &middot; No Facility</div></div>
+    <div class="gap-city">
+      <div class="name">Nashville</div>
+      <div class="detail">Massive Wrestling Market</div>
+    </div>
+  </div>
+
+  <div class="opportunity-grid fade">
+    <div class="opp-card">
+      <div class="opp-num">190 mi</div>
+      <div class="opp-label">Service Gap</div>
+      <div class="opp-desc">No dedicated multi-sport complex between two major wrestling markets</div>
+    </div>
+    <div class="opp-card">
+      <div class="opp-num">50+</div>
+      <div class="opp-label">Schools in Range</div>
+      <div class="opp-desc">Madison County, Limestone County, and southern Tennessee schools with wrestling programs</div>
+    </div>
+    <div class="opp-card">
+      <div class="opp-num">3 States</div>
+      <div class="opp-label">Draw Radius</div>
+      <div class="opp-desc">Alabama, Tennessee, and Georgia athletes within 2-hour drive of Hazel Green</div>
+    </div>
+    <div class="opp-card">
+      <div class="opp-num">Year-Round</div>
+      <div class="opp-label">Revenue</div>
+      <div class="opp-desc">Tournaments, training camps, S&amp;C memberships, turf rentals, outdoor events via PLEX FLEX&trade;</div>
+    </div>
+  </div>
+</section>
+
+<!-- FACILITY -->
+<section id="facility">
+  <div class="sec-label fade">The Facility</div>
+  <h2 class="sec-title fade">Built to Transform</h2>
+  <p class="sec-sub fade">A 200' &times; 250' Quonset hangar housing the world's first retractable concrete beam bleacher system. One building that becomes whatever the moment demands.</p>
+  <div class="divider"></div>
+
+  <div class="feature-grid">
+    <div class="feature fade">
+      <span class="accent">Competition Ready</span>
+      <h3>NCAA Wrestling Arena</h3>
+      <p>Three regulation 42'&times;42' competition mats. Space for simultaneous multi-mat tournaments. Full warm-up areas. Built to host regionals.</p>
+    </div>
+    <div class="feature fade">
+      <span class="accent">Patent-Worthy Innovation</span>
+      <h3>PLEX FLEX&trade; System</h3>
+      <p>16 rows of retractable concrete beams deploy 2,600 seats inside, outside, or split. Indoor arena to outdoor stadium in minutes. Nothing like it exists.</p>
+    </div>
+    <div class="feature fade">
+      <span class="accent">Multi-Sport</span>
+      <h3>40-Yard Indoor Turf</h3>
+      <p>Sprint training, agility drills, football combine prep, soccer practice. Marked yard lines. Climate-controlled year-round.</p>
+    </div>
+    <div class="feature fade">
+      <span class="accent">Elite Training</span>
+      <h3>Strength &amp; Conditioning</h3>
+      <p>Power racks, Olympic platforms, cable machines, cardio. Glass walls overlooking the wrestling floor. Open to memberships.</p>
+    </div>
+    <div class="feature fade">
+      <span class="accent">Indoor/Outdoor</span>
+      <h3>Glass Garage Doors</h3>
+      <p>Full-height glass doors along the east wall open to an outdoor training field. Natural light, fresh air, maximum flexibility.</p>
+    </div>
+    <div class="feature fade">
+      <span class="accent">Community Hub</span>
+      <h3>Grand Entrance &amp; Amenities</h3>
+      <p>Ticket sales, concessions, merchandise, locker rooms, offices, parent viewing areas, food truck parking. Built for game day.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LEGACY -->
+<section id="legacy">
+  <div class="sec-label fade">The Legacy</div>
+  <h2 class="sec-title fade">Named for Legends</h2>
+  <p class="sec-sub fade">This complex carries the names of two coaches who shaped generations of wrestlers and young men across North Alabama.</p>
+  <div class="divider"></div>
+
+  <div class="legacy-grid">
+    <div class="legacy-card fade">
+      <div class="title">In Memory</div>
+      <h3>Coach Loudon</h3>
+      <p>Head wrestling coach at Hazel Green High School. Taken too soon by a heart attack at the start of this season. Coach Loudon poured everything into his wrestlers — not just technique, but character. He believed every kid on that mat could become something. This complex exists because of what he started. His name goes on the front door.</p>
+    </div>
+    <div class="legacy-card fade">
+      <div class="title">In Honor</div>
+      <h3>Coach DeSarro</h3>
+      <p>Retired head wrestling coach at Grissom High School. One of the winningest coaches in Alabama wrestling history. Multiple state championships. Awards that fill walls. More importantly — he built men. He coached Coach Loudon. He coached me. The lineage runs deep. His name belongs on this complex because without him, none of us would be here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORE -->
+<section id="explore">
+  <div class="sec-label fade">Interactive</div>
+  <h2 class="sec-title fade">See It Before It's Built</h2>
+  <p class="sec-sub fade">Full 3D walkthroughs, animated construction sequences, and interactive floor plans. Built from scratch to show exactly what this facility becomes.</p>
+  <div class="divider"></div>
+
+  <div class="demo-grid">
+    <a class="demo-card fade" href="explore.html">
+      <h3>Full 3D Walkthrough</h3>
+      <p>Drag to orbit. Click to explore every zone — wrestling arena, turf, S&amp;C, PLEX FLEX. All angles, all areas.</p>
+      <div class="cta">Launch Interactive 3D &rarr;</div>
+    </a>
+    <a class="demo-card fade" href="plexflex.html">
+      <h3>PLEX FLEX&trade; Demo</h3>
+      <p>Watch 2,600 seats deploy through the wall. Full inside, half &amp; half, full outside. The money shot.</p>
+      <div class="cta">Watch The Transform &rarr;</div>
+    </a>
+    <a class="demo-card fade" href="floorplan.html">
+      <h3>Floor Plan</h3>
+      <p>Bird's-eye layout. Every zone labeled. Entrance flow, parking, food trucks, locker rooms. The full picture.</p>
+      <div class="cta">View Layout &rarr;</div>
+    </a>
+  </div>
+</section>
+
+<!-- VISION -->
+<section id="vision">
+  <div class="sec-label fade">The Vision</div>
+  <h2 class="sec-title fade">More Than a Building</h2>
+  <div class="divider"></div>
+
+  <div class="vision-text fade">
+    <p>I'm a dispatch operator. Father of five. Youth wrestling coach in Hazel Green. I've seen what a good coach can do for a kid — and I've seen what happens when there's nowhere for that kid to go train.</p>
+    <p>Birmingham has facilities. Nashville has facilities. But the kids between those cities? They drive hours or they don't go at all. <strong>That's the gap. And that's who this is for.</strong></p>
+    <p>This complex isn't just for wrestlers. It's for the football player who needs a 40-yard turf in January. The parent who needs a safe place for their kid after school. The school that can't afford to build its own facility. The community that deserves something world-class.</p>
+    <p>Coach Loudon didn't get to see it finished. Coach DeSarro spent decades building something from nothing. <strong>This is what comes next.</strong></p>
+  </div>
+
+  <div class="quote fade">&ldquo;The kids between Birmingham and Nashville deserve a world-class facility. We're going to build it.&rdquo;</div>
+  <div class="quote-attr fade">Shane Brazelton &middot; Founder</div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2 class="fade">Ready to Fill the Gap?</h2>
+  <p class="fade">Investors, sponsors, community partners — let's bring this to North Alabama.</p>
+  <div class="fade">
+    <a href="mailto:shanebrain@theangel.cloud" class="btn pri">Get In Touch</a>
+    <a href="explore.html" class="btn" style="margin-left:12px">Explore the Facility</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Loudon / DeSarro Athletic Complex &middot; Hazel Green, Alabama &middot; &copy; 2026</p>
+  <p style="margin-top:6px">Built by Shane Brazelton &middot; <a href="https://ko-fi.com/shanebrain" target="_blank" rel="noopener">Support on Ko-fi</a></p>
+</footer>
+
+<script>
+// Navbar scroll
+var nav=document.getElementById('nav');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>50)});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'})});
+});
+
+// Intersection Observer fade-in
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('vis')});
+},{threshold:0.1});
+document.querySelectorAll('.fade').forEach(function(el){obs.observe(el)});
+</script>
+
 </body>
 </html>
