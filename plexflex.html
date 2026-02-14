@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLEX FLEX™ — Corrected Orientation & Dual-View</title>
+<title>PLEX FLEX&trade; — Retractable Concrete Beam Arena System</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Barlow+Condensed:wght@300;400;600&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
@@ -17,145 +17,309 @@ body{background:#0a0c14;color:#fff;font-family:'Barlow',sans-serif;overflow:hidd
 .title h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:900}
 .title h1 span{color:#d4af37;font-style:italic}
 .title p{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;color:rgba(255,255,255,0.4);margin-top:4px}
+.status{position:fixed;top:75px;left:50%;transform:translateX(-50%);z-index:10;text-align:center;pointer-events:none;transition:opacity .4s}
+.status .label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#d4af37}
+.status .desc{font-family:'Barlow',sans-serif;font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px}
+.back-link{position:fixed;top:16px;left:16px;z-index:15;font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-decoration:none;transition:color .2s}
+.back-link:hover{color:#d4af37}
+.specs{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:24px;pointer-events:none}
+.spec{text-align:center}
+.spec .val{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:#d4af37}
+.spec .lbl{font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-top:2px}
 </style>
 </head>
 <body>
+<a class="back-link" href="index.html">&larr; Back</a>
 <div id="C"></div>
 <div class="title">
-  <h1>PLEX FLEX<span>™</span></h1>
-  <p>North/South Swapped · Dual-Side Visibility · Stepped Rake Corrected</p>
+  <h1>PLEX FLEX<span>&trade;</span></h1>
+  <p>20' Beams &middot; 16 Rows &times; 12 Sections &middot; 2,500 Seats &middot; Outward Deploy Only</p>
+</div>
+<div class="status" id="status">
+  <div class="label" id="statusLabel">Stowed</div>
+  <div class="desc" id="statusDesc">Beams flush in east wall &mdash; full 200' interior clear</div>
+</div>
+<div class="specs">
+  <div class="spec"><div class="val">20'</div><div class="lbl">Beam Length</div></div>
+  <div class="spec"><div class="val">16</div><div class="lbl">Rows</div></div>
+  <div class="spec"><div class="val">12</div><div class="lbl">Sections</div></div>
+  <div class="spec"><div class="val">2,500</div><div class="lbl">Total Seats</div></div>
 </div>
 <div class="controls">
-  <button class="btn on" onclick="deploy('arena')">Inside Arena</button>
-  <button class="btn" onclick="deploy('outdoor')">Outside Stadium</button>
-  <button class="btn" onclick="deploy('stowed')">Stowed</button>
-  <button class="btn" onclick="toggleView()" style="border-left:1px solid rgba(212,175,55,0.3)">Swap Side View</button>
+  <button class="btn on" id="btnStowed" onclick="deploy('stowed')">Stowed</button>
+  <button class="btn" id="btnDeployed" onclick="deploy('deployed')">Deploy Outside</button>
+  <button class="btn" onclick="toggleView()" style="border-left:1px solid rgba(212,175,55,0.3)">Swap View</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const FT = 0.3048;
-const BW = 200*FT, BL = 250*FT, BH = 65*FT;
-const BEAM_L = 600*FT, BEAM_H = 4*FT;
-const ROWS = 10;
-const WALL_X = BW/2;
-const HORIZ_OFFSET = 4*FT;
+// ============================================================
+// PLEX FLEX™ — Corrected: 20' beams, outward-only, east wall
+// 16 rows × 12 sections = 192 beams, ~2,500 seats
+// ============================================================
+var FT = 0.3048;
+var BW = 200 * FT, BL = 250 * FT, BH = 40 * FT;
+var BEAM_L = 20 * FT;
+var BEAM_H = 2.5 * FT;
+var ROWS = 16, SECTIONS = 12;
+var SEC_LEN = BL / SECTIONS;
+var WALL_X = BW; // east wall at X = 200'
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
+// Renderer
+var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
-document.body.appendChild(renderer.domElement);
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const cam = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 500);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.getElementById('C').appendChild(renderer.domElement);
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-sun.position.set(50, 50, 50);
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+var cam = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
+
+// Lights
+scene.add(new THREE.AmbientLight(0x506080, 0.5));
+scene.add(new THREE.HemisphereLight(0x8ecae6, 0x2a1f0a, 0.4));
+var sun = new THREE.DirectionalLight(0xfff0d0, 1.2);
+sun.position.set(60, 50, 40);
 scene.add(sun);
 
 // Materials
-const matConcrete = new THREE.MeshStandardMaterial({color:0xd4cfc4});
-const matSeat = new THREE.MeshStandardMaterial({color:0x3a3a4a});
-const matFloor = new THREE.MeshStandardMaterial({color:0x8b1a1a});
-const matWall = new THREE.MeshStandardMaterial({color:0x4a4a52, side:THREE.DoubleSide, transparent: true, opacity: 0.7});
-const matGrass = new THREE.MeshStandardMaterial({color:0x3a6b2a});
+var matConcrete = new THREE.MeshLambertMaterial({ color: 0x8a8a85 });
+var matSeat = new THREE.MeshLambertMaterial({ color: 0x9a9a95 });
+var matFloor = new THREE.MeshLambertMaterial({ color: 0x1a1a1e });
+var matWall = new THREE.MeshLambertMaterial({ color: 0x3a4555 });
+var matWallGlass = new THREE.MeshLambertMaterial({ color: 0x88ccee, transparent: true, opacity: 0.15 });
+var matTrack = new THREE.MeshLambertMaterial({ color: 0x555555 });
+var matSteel = new THREE.MeshLambertMaterial({ color: 0x484848 });
+var matGround = new THREE.MeshLambertMaterial({ color: 0x1e2a16 });
+var matGold = new THREE.MeshLambertMaterial({ color: 0xd4af37 });
+var matMat = new THREE.MeshLambertMaterial({ color: 0xa01020 });
+var matTurf = new THREE.MeshLambertMaterial({ color: 0x2d7a30 });
 
 // Environment
-const arenaFloor = new THREE.Mesh(new THREE.PlaneGeometry(BW, BL), matFloor);
-arenaFloor.rotation.x = -Math.PI/2;
-scene.add(arenaFloor);
+// Indoor floor
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(BW, 0.1, BL),
+  matFloor
+)).position.set(BW / 2, -0.05, BL / 2);
 
-const grassField = new THREE.Mesh(new THREE.PlaneGeometry(BW, BL), matGrass);
-grassField.rotation.x = -Math.PI/2;
-grassField.position.x = BW;
-scene.add(grassField);
+// Outdoor ground
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(80, 0.05, BL + 20),
+  matGround
+)).position.set(BW + 40, -0.15, BL / 2);
 
-const wall = new THREE.Mesh(new THREE.BoxGeometry(0.5, BH, BL), matWall);
-wall.position.set(WALL_X, BH/2, 0);
+// East wall (transparent to show beam movement)
+var wall = new THREE.Mesh(
+  new THREE.BoxGeometry(0.3, BH, BL),
+  matWallGlass
+);
+wall.position.set(WALL_X, BH / 2, BL / 2);
 scene.add(wall);
 
-const beams = [];
-
-function createSteppedSeating(zLimit, stepDirection) {
-    for(let r = 0; r < ROWS; r++) {
-        const y = r * BEAM_H + BEAM_H/2;
-        // The top row (highest r) should be furthest back (North for North side, South for South side)
-        // Each lower row steps FORWARD by 4'
-        const zShift = (ROWS - 1 - r) * HORIZ_OFFSET * stepDirection;
-        const z = zLimit - zShift;
-
-        for(let s = 0; s < 5; s++) {
-            const beam = new THREE.Mesh(new THREE.BoxGeometry(BEAM_L/5, BEAM_H*0.9, BEAM_L), matConcrete);
-            const seat = new THREE.Mesh(new THREE.BoxGeometry(BEAM_L/6, 0.1, BEAM_L*0.9), matSeat);
-            beam.rotation.y = Math.PI/2;
-            seat.rotation.y = Math.PI/2;
-            beam.position.set(0, y, z);
-            seat.position.set(0, y + BEAM_H*0.45, z);
-            scene.add(beam); scene.add(seat);
-            beams.push({ row: r, mesh: beam, seatMesh: seat, startX: 0, targetX: 0 });
-        }
-    }
+// Track rails along east wall
+for (var r = 0; r < ROWS; r++) {
+  var ty = r * BEAM_H + 0.5;
+  var track = new THREE.Mesh(
+    new THREE.BoxGeometry(BEAM_L * 1.8, 0.05, 0.05),
+    matTrack
+  );
+  track.position.set(WALL_X + BEAM_L * 0.4, ty, BL / 2);
+  scene.add(track);
 }
 
-// Corrected North: Top row is most North (+Z). Step up as you go North.
-createSteppedSeating(BL/2 - 20*FT, 1);
-// Corrected South: Top row is most South (-Z). Step up as you go South.
-createSteppedSeating(-BL/2 + 20*FT, -1);
+// Support columns outside
+for (var c = 0; c <= 4; c++) {
+  var cz = c * BL / 4;
+  var col = new THREE.Mesh(
+    new THREE.BoxGeometry(0.3, ROWS * BEAM_H + 3, 0.3),
+    matSteel
+  );
+  col.position.set(WALL_X + BEAM_L + 3 * FT, (ROWS * BEAM_H) / 2, cz);
+  scene.add(col);
+}
 
-function setBeamTargets(mode){
-  beams.forEach(b => {
-    if(mode === 'arena') b.targetX = WALL_X - (BEAM_L/2);
-    else if(mode === 'outdoor') b.targetX = WALL_X + (BEAM_L/2);
-    else b.targetX = WALL_X;
+// Wrestling mat (reference, in center of building)
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(42 * FT, 0.04, 42 * FT),
+  matMat
+)).position.set(BW / 2, 0.02, BL * 0.35);
+
+// Turf strip (reference)
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(55 * FT, 0.03, 180 * FT),
+  matTurf
+)).position.set(28 * FT, 0.015, BL * 0.55);
+
+// Building shell hints (corners)
+for (var corner = 0; corner < 4; corner++) {
+  var cx = corner < 2 ? 0 : BW;
+  var cz2 = corner % 2 === 0 ? 0 : BL;
+  scene.add(new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, BH, 0.2),
+    matSteel
+  )).position.set(cx, BH / 2, cz2);
+}
+
+// ── BEAMS ──────────────────────────────────────────────────
+var beams = [];
+
+for (var row = 0; row < ROWS; row++) {
+  var y = row * BEAM_H + BEAM_H / 2 + 0.5;
+  for (var sec = 0; sec < SECTIONS; sec++) {
+    var z = sec * SEC_LEN + SEC_LEN / 2;
+    var beam = new THREE.Mesh(
+      new THREE.BoxGeometry(BEAM_L, BEAM_H * 0.85, SEC_LEN - 0.25),
+      matConcrete
+    );
+    beam.position.set(WALL_X, y, z);
+
+    var seat = new THREE.Mesh(
+      new THREE.BoxGeometry(BEAM_L * 0.9, 0.06, SEC_LEN - 0.4),
+      matSeat
+    );
+    seat.position.set(WALL_X, y + BEAM_H * 0.43, z);
+
+    scene.add(beam);
+    scene.add(seat);
+    beams.push({
+      mesh: beam, seat: seat, row: row, sec: sec,
+      startX: WALL_X, targetX: WALL_X
+    });
+  }
+}
+
+// ── BEAM TARGETS (outward only) ────────────────────────────
+function setBeamTargets(mode) {
+  beams.forEach(function (b) {
+    var stagger = b.row * 0.2 * FT; // higher rows step further out for rake
+    if (mode === 'deployed') {
+      b.targetX = WALL_X + BEAM_L / 2 + stagger;
+    } else { // stowed
+      b.targetX = WALL_X; // flush in wall
+    }
   });
 }
 
-function animatePlexFlex(mode){
-  beams.forEach(b => b.startX = b.mesh.position.x);
+// ── ANIMATE ────────────────────────────────────────────────
+function animateBeams(mode) {
+  beams.forEach(function (b) { b.startX = b.mesh.position.x; });
   setBeamTargets(mode);
-  const startTime = performance.now();
-  function update(){
-    const t = Math.min((performance.now() - startTime) / 1500, 1);
-    const eased = 1 - Math.pow(1 - t, 3);
-    beams.forEach(b => {
-      const x = b.startX + (b.targetX - b.startX) * eased;
-      b.mesh.position.x = x; b.seatMesh.position.x = x;
+  var startTime = performance.now();
+  var dur = 3000;
+
+  // Update status
+  var label = document.getElementById('statusLabel');
+  var desc = document.getElementById('statusDesc');
+  if (mode === 'deployed') {
+    label.textContent = 'Deploying Outside';
+    desc.textContent = '2,500 seats extending outward through east wall';
+  } else {
+    label.textContent = 'Stowing';
+    desc.textContent = 'Beams retracting flush into east wall';
+  }
+
+  function update() {
+    var t = Math.min((performance.now() - startTime) / dur, 1);
+    var eased = 1 - Math.pow(1 - t, 3);
+    beams.forEach(function (b) {
+      var rowDelay = b.row * 0.02;
+      var rt = Math.max(0, Math.min((t - rowDelay) / (1 - rowDelay), 1));
+      var re = 1 - Math.pow(1 - rt, 2.8);
+      var x = b.startX + (b.targetX - b.startX) * re;
+      b.mesh.position.x = x;
+      b.seat.position.x = x;
     });
-    if(t < 1) requestAnimationFrame(update);
+    if (t < 1) {
+      requestAnimationFrame(update);
+    } else {
+      beams.forEach(function (b) {
+        b.mesh.position.x = b.targetX;
+        b.seat.position.x = b.targetX;
+      });
+      if (mode === 'deployed') {
+        label.textContent = 'Deployed Outside';
+        desc.textContent = 'Full outdoor stadium — 2,500 seats with stepped rake sightlines';
+      } else {
+        label.textContent = 'Stowed';
+        desc.textContent = 'Beams flush in east wall — full 200\' interior clear';
+      }
+    }
   }
   update();
 }
 
-function deploy(mode){
-  animatePlexFlex(mode);
-  document.querySelectorAll('.btn').forEach(b => b.classList.remove('on'));
-  event.target.classList.add('on');
+function deploy(mode) {
+  animateBeams(mode);
+  document.getElementById('btnStowed').classList.toggle('on', mode === 'stowed');
+  document.getElementById('btnDeployed').classList.toggle('on', mode === 'deployed');
 }
 
-// DUAL-VIEW CAMERA LOGIC
-let currentSide = 'inside';
-let tPos = new THREE.Vector3(WALL_X - 60, 45, 60);
-let tLook = new THREE.Vector3(WALL_X, 15, 0);
+// ── CAMERA ─────────────────────────────────────────────────
+var currentSide = 'outside';
+var tPos = new THREE.Vector3(WALL_X + BEAM_L + 12, 14, BL * 0.35);
+var tLook = new THREE.Vector3(WALL_X, ROWS * BEAM_H * 0.35, BL * 0.45);
 
 function toggleView() {
-    if(currentSide === 'inside') {
-        tPos.set(WALL_X + 60, 45, -60);
-        currentSide = 'outside';
-    } else {
-        tPos.set(WALL_X - 60, 45, 60);
-        currentSide = 'inside';
-    }
+  if (currentSide === 'outside') {
+    tPos.set(WALL_X - 18, 10, BL * 0.4);
+    tLook.set(WALL_X + 2, ROWS * BEAM_H * 0.3, BL * 0.45);
+    currentSide = 'inside';
+  } else {
+    tPos.set(WALL_X + BEAM_L + 12, 14, BL * 0.35);
+    tLook.set(WALL_X, ROWS * BEAM_H * 0.35, BL * 0.45);
+    currentSide = 'outside';
+  }
 }
 
-function render(){
+// Mouse orbit
+var orbT = 0, orbP = 0, mouseDown = false, lastM = { x: 0, y: 0 };
+renderer.domElement.addEventListener('mousedown', function (e) { mouseDown = true; lastM = { x: e.clientX, y: e.clientY }; });
+renderer.domElement.addEventListener('mousemove', function (e) {
+  if (!mouseDown) return;
+  orbT += (e.clientX - lastM.x) * 0.003;
+  orbP = Math.max(-0.4, Math.min(0.4, orbP + (e.clientY - lastM.y) * 0.003));
+  lastM = { x: e.clientX, y: e.clientY };
+});
+renderer.domElement.addEventListener('mouseup', function () { mouseDown = false; });
+renderer.domElement.addEventListener('wheel', function (e) {
+  var d = cam.position.clone().sub(tLook).normalize();
+  tPos.add(d.multiplyScalar(e.deltaY * 0.015));
+});
+
+// ── RENDER ─────────────────────────────────────────────────
+function render() {
   requestAnimationFrame(render);
-  cam.position.lerp(tPos, 0.05);
+
+  var fp = tPos.clone();
+  if (orbT || orbP) {
+    var off = cam.position.clone().sub(tLook);
+    var r = off.length();
+    var th = Math.atan2(off.x, off.z) + orbT;
+    var ph = Math.max(0.1, Math.min(1.4, Math.acos(off.y / r) + orbP));
+    fp.set(
+      tLook.x + r * Math.sin(ph) * Math.sin(th),
+      tLook.y + r * Math.cos(ph),
+      tLook.z + r * Math.sin(ph) * Math.cos(th)
+    );
+  }
+  cam.position.lerp(fp, 0.05);
   cam.lookAt(tLook);
+  orbT *= 0.92;
+  orbP *= 0.92;
   renderer.render(scene, cam);
 }
-setBeamTargets('arena');
-beams.forEach(b => { b.mesh.position.x = b.targetX; b.seatMesh.position.x = b.targetX; });
+
+// Start stowed
+setBeamTargets('stowed');
+beams.forEach(function (b) { b.mesh.position.x = b.targetX; b.seat.position.x = b.targetX; });
 render();
+
+addEventListener('resize', function () {
+  cam.aspect = innerWidth / innerHeight;
+  cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 </script>
 </body>
 </html>

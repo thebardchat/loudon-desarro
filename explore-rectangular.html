@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loudon / DeSarro — Rectangular Steel Exploration</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Barlow:wght@300;400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#060608;color:#fff;font-family:'Barlow',sans-serif;overflow:hidden;width:100vw;height:100vh;user-select:none}
+  canvas{display:block}
+  #C{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+
+  /* HERO */
+  #hero{position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;display:flex;flex-direction:column;justify-content:center;align-items:center;background:radial-gradient(ellipse at 50% 40%,rgba(15,12,8,0.08) 0%,rgba(6,6,8,0.93) 70%);transition:opacity 1.4s ease}
+  #hero.off{opacity:0;pointer-events:none}
+  .hl{font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:12px;letter-spacing:7px;text-transform:uppercase;color:rgba(212,175,55,0.65);margin-bottom:16px;opacity:0;animation:r 1s .3s forwards}
+  .hn{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(30px,7vw,80px);line-height:.9;text-align:center;letter-spacing:-1px;opacity:0;animation:r 1s .5s forwards}
+  .hn em{font-style:italic;font-weight:400;color:#d4af37;display:block;font-size:.28em;letter-spacing:5px;margin-top:8px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
+  .hn .pfx{display:block;font-size:.16em;letter-spacing:6px;font-family:'Barlow Condensed',sans-serif;font-weight:300;color:rgba(255,255,255,0.25);margin-top:10px;text-transform:uppercase}
+  .hd{font-weight:300;font-size:clamp(12px,1.6vw,15px);color:rgba(255,255,255,0.35);margin-top:20px;text-align:center;max-width:560px;line-height:1.7;opacity:0;animation:r 1s .8s forwards}
+  .hg{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:32px;opacity:0;animation:r 1s 1s forwards}
+  .hv{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;color:#d4af37;text-align:center}
+  .hlb{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.22);text-align:center;margin-top:2px}
+  .hbtns{display:flex;gap:12px;margin-top:36px;opacity:0;animation:r 1s 1.2s forwards}
+  .hb{padding:13px 44px;background:0;border:1px solid rgba(212,175,55,0.35);color:#d4af37;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+  .hb:hover{background:#d4af37;color:#0a0a0a}
+  .hb.pri{background:rgba(212,175,55,0.1);border-color:rgba(212,175,55,0.5)}
+  .back-link{position:fixed;top:16px;left:16px;z-index:25;font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-decoration:none;transition:color .2s}
+  .back-link:hover{color:#d4af37}
+
+  /* HUD */
+  #hud{position:fixed;z-index:5;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .6s}
+  #hud.on{opacity:1}
+  .bar{position:absolute;top:0;left:0;right:0;height:56px;background:linear-gradient(180deg,rgba(6,6,8,.8) 0%,transparent);display:flex;justify-content:space-between;align-items:center;padding:0 22px}
+  .brand{font-family:'Playfair Display',serif;font-weight:700;font-size:13px}
+  .brand span{color:#d4af37}
+  .brand .pfbadge{font-family:'Barlow Condensed';font-weight:400;font-size:9px;letter-spacing:2px;color:rgba(212,175,55,0.45);margin-left:6px;border:1px solid rgba(212,175,55,0.2);padding:2px 6px;border-radius:2px}
+  .brand .typebadge{font-family:'Barlow Condensed';font-weight:400;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);margin-left:6px;border:1px solid rgba(255,255,255,0.1);padding:2px 6px;border-radius:2px}
+  .tinf{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2)}
+
+  #phase{position:absolute;top:62px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;transition:opacity .4s}
+  .ph-name{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#d4af37}
+  .ph-desc{font-family:'Barlow',sans-serif;font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px}
+  #pbar{position:absolute;top:90px;left:50%;transform:translateX(-50%);width:240px;height:2px;background:rgba(255,255,255,0.06);border-radius:2px;pointer-events:none}
+  #pfill{height:100%;background:#d4af37;border-radius:2px;width:0%;transition:width .3s}
+  #vl{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);text-align:center}
+  .vn{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  .vd{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:#d4af37;margin-top:3px;text-transform:uppercase}
+  .nav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:3px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:98vw}
+  .nb{padding:6px 10px;background:rgba(6,6,8,.55);border:1px solid rgba(212,175,55,.08);color:rgba(255,255,255,.35);font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .nb:hover,.nb.on{background:rgba(212,175,55,.08);border-color:rgba(212,175,55,.3);color:#d4af37}
+  .nb.gold{background:rgba(212,175,55,.15);border-color:#d4af37;color:#d4af37}
+
+  /* Still photo overlay */
+  #still{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;opacity:0;transition:opacity .5s}
+  #still.on{opacity:1}
+  .still-border{position:absolute;top:3%;left:3%;right:3%;bottom:3%;border:1px solid rgba(212,175,55,0.25)}
+  .still-corner{position:absolute;width:20px;height:20px;border-color:#d4af37;border-style:solid}
+  .sc-tl{top:3%;left:3%;border-width:1px 0 0 1px}
+  .sc-tr{top:3%;right:3%;border-width:1px 1px 0 0}
+  .sc-bl{bottom:3%;left:3%;border-width:0 0 1px 1px}
+  .sc-br{bottom:3%;right:3%;border-width:0 1px 1px 0}
+  .still-label{position:absolute;bottom:5%;right:5%;font-family:'Barlow Condensed';font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,175,55,0.5)}
+
+  .cbar{position:absolute;left:0;right:0;height:0;background:#000;transition:height .8s ease;z-index:3}
+  .cbar.top{top:0}.cbar.bot{bottom:0}
+  .cbar.on{height:8%}
+
+  @keyframes r{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:600px){.hg{grid-template-columns:repeat(3,1fr);gap:12px}.nav{gap:2px}.hbtns{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+<a class="back-link" href="index.html">&larr; Back to Home</a>
+<div id="C"></div>
+<div class="cbar top" id="cTop"></div>
+<div class="cbar bot" id="cBot"></div>
+<div id="still"><div class="still-border"></div><div class="still-corner sc-tl"></div><div class="still-corner sc-tr"></div><div class="still-corner sc-bl"></div><div class="still-corner sc-br"></div><div class="still-label">Loudon / DeSarro &middot; Rectangular Steel</div></div>
+
+<div id="hero">
+  <div class="hl">Hazel Green &middot; Alabama</div>
+  <h1 class="hn">Loudon / DeSarro
+    <em>Athletic Complex</em>
+    <span class="pfx">Rectangular Steel &middot; PLEX FLEX&trade; Retractable Arena</span>
+  </h1>
+  <p class="hd">50,000 square feet of transformable athletic architecture in a conventional steel-frame building. Clean lines, proven construction &mdash; with the same PLEX FLEX&trade; innovation deploying 2,500 seats outward.</p>
+  <div class="hg">
+    <div><div class="hv">50K</div><div class="hlb">Square Feet</div></div>
+    <div><div class="hv">2,500</div><div class="hlb">Outdoor Seats</div></div>
+    <div><div class="hv">NCAA</div><div class="hlb">Wrestling</div></div>
+    <div><div class="hv">75 yd</div><div class="hlb">Indoor Turf</div></div>
+    <div><div class="hv">FLEX&trade;</div><div class="hlb">Plex Flex</div></div>
+  </div>
+  <div class="hbtns">
+    <button class="hb pri" onclick="startBuild()">Watch It Built &rarr;</button>
+    <button class="hb" onclick="enterExplore()">Explore Facility</button>
+  </div>
+</div>
+
+<div id="hud">
+  <div class="bar">
+    <div class="brand">Loudon / <span>DeSarro</span><span class="pfbadge">PLEX FLEX&trade;</span><span class="typebadge">RECTANGULAR</span></div>
+    <div class="tinf">Hazel Green, AL &middot; 50,000 SF &middot; 200' &times; 250' &times; 40'</div>
+  </div>
+  <div id="phase"><div class="ph-name" id="PN"></div><div class="ph-desc" id="PD"></div></div>
+  <div id="pbar"><div id="pfill"></div></div>
+  <div id="vl"><div class="vn" id="VN"></div><div class="vd" id="VD"></div></div>
+  <div class="nav" id="navBar"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/facility-core.js"></script>
+<script>
+// ============================================================
+// RECTANGULAR STEEL SHELL — 200' x 250' x 40' eave
+// ============================================================
+FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
+  var FT = D.FT, BW = D.BW, BL = D.BL;
+  var BH = 40 * FT; // 40' eave height
+  var group = new THREE.Group();
+
+  // Steel columns (perimeter, every 25')
+  var colSpacingX = BW / 8;
+  var colSpacingZ = BL / 10;
+  for (var x = 0; x <= 8; x++) {
+    for (var z = 0; z <= 10; z++) {
+      // Only perimeter columns (skip interior)
+      if (x > 0 && x < 8 && z > 0 && z < 10) continue;
+      var col = new THREE.Mesh(
+        new THREE.BoxGeometry(0.3, BH, 0.3),
+        M.steel
+      );
+      col.position.set(x * colSpacingX, BH / 2, z * colSpacingZ);
+      group.add(col);
+    }
+  }
+
+  // Wall panels (4 walls)
+  // West wall (X=0) — glass garage doors handled separately, just add header
+  var wallMat = M.rectWall;
+  group.add(new THREE.Mesh(
+    new THREE.BoxGeometry(0.15, BH * 0.2, BL),
+    wallMat
+  )).position.set(0.08, BH * 0.9, BL / 2);
+
+  // East wall (X=BW) — PLEX FLEX wall, solid with beam openings implied
+  var eastWall = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, BH, BL),
+    wallMat
+  );
+  eastWall.position.set(BW, BH / 2, BL / 2);
+  group.add(eastWall);
+
+  // North wall (Z=0) — front, has entrance openings
+  var northWallLeft = new THREE.Mesh(
+    new THREE.BoxGeometry(BW * 0.3, BH, 0.15),
+    wallMat
+  );
+  northWallLeft.position.set(BW * 0.15, BH / 2, 0.08);
+  group.add(northWallLeft);
+
+  var northWallRight = new THREE.Mesh(
+    new THREE.BoxGeometry(BW * 0.3, BH, 0.15),
+    wallMat
+  );
+  northWallRight.position.set(BW * 0.85, BH / 2, 0.08);
+  group.add(northWallRight);
+
+  var northWallTop = new THREE.Mesh(
+    new THREE.BoxGeometry(BW * 0.4, BH * 0.35, 0.15),
+    wallMat
+  );
+  northWallTop.position.set(BW / 2, BH * 0.825, 0.08);
+  group.add(northWallTop);
+
+  // South wall (Z=BL) — solid back wall
+  var southWall = new THREE.Mesh(
+    new THREE.BoxGeometry(BW, BH, 0.15),
+    wallMat
+  );
+  southWall.position.set(BW / 2, BH / 2, BL);
+  group.add(southWall);
+
+  // West wall lower fill (below glass doors)
+  var westLower = new THREE.Mesh(
+    new THREE.BoxGeometry(0.15, 0.5, BL),
+    wallMat
+  );
+  westLower.position.set(0.08, 0.25, BL / 2);
+  group.add(westLower);
+
+  // Roof — flat with slight slope (front to back)
+  var roofGeo = new THREE.BoxGeometry(BW + 2 * FT, 0.3, BL + 2 * FT);
+  var roof = new THREE.Mesh(roofGeo, M.rectRoof);
+  roof.position.set(BW / 2, BH, BL / 2);
+  group.add(roof);
+
+  // Roof trusses (visible from inside)
+  for (var t = 0; t <= 10; t++) {
+    var tz = t * BL / 10;
+    var truss = new THREE.Mesh(
+      new THREE.BoxGeometry(BW - 1, 0.12, 0.12),
+      M.steel
+    );
+    truss.position.set(BW / 2, BH - 0.5, tz);
+    group.add(truss);
+    // diagonal braces
+    var braceL = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 2, 0.06),
+      M.steel
+    );
+    braceL.position.set(2, BH - 1.5, tz);
+    braceL.rotation.z = 0.3;
+    group.add(braceL);
+    var braceR = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 2, 0.06),
+      M.steel
+    );
+    braceR.position.set(BW - 2, BH - 1.5, tz);
+    braceR.rotation.z = -0.3;
+    group.add(braceR);
+  }
+
+  // Gutter/fascia trim
+  group.add(new THREE.Mesh(
+    new THREE.BoxGeometry(BW + 4 * FT, 0.15, 0.15),
+    M.door
+  )).position.set(BW / 2, BH + 0.15, -1 * FT);
+
+  group.add(new THREE.Mesh(
+    new THREE.BoxGeometry(BW + 4 * FT, 0.15, 0.15),
+    M.door
+  )).position.set(BW / 2, BH + 0.15, BL + 1 * FT);
+
+  return group;
+});
+</script>
+</body>
+</html>

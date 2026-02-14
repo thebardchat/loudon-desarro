@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loudon / DeSarro — Quonset Arch Exploration</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Barlow:wght@300;400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#060608;color:#fff;font-family:'Barlow',sans-serif;overflow:hidden;width:100vw;height:100vh;user-select:none}
+  canvas{display:block}
+  #C{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+
+  /* HERO */
+  #hero{position:fixed;top:0;left:0;width:100%;height:100%;z-index:20;display:flex;flex-direction:column;justify-content:center;align-items:center;background:radial-gradient(ellipse at 50% 40%,rgba(15,12,8,0.08) 0%,rgba(6,6,8,0.93) 70%);transition:opacity 1.4s ease}
+  #hero.off{opacity:0;pointer-events:none}
+  .hl{font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:12px;letter-spacing:7px;text-transform:uppercase;color:rgba(212,175,55,0.65);margin-bottom:16px;opacity:0;animation:r 1s .3s forwards}
+  .hn{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(30px,7vw,80px);line-height:.9;text-align:center;letter-spacing:-1px;opacity:0;animation:r 1s .5s forwards}
+  .hn em{font-style:italic;font-weight:400;color:#d4af37;display:block;font-size:.28em;letter-spacing:5px;margin-top:8px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
+  .hn .pfx{display:block;font-size:.16em;letter-spacing:6px;font-family:'Barlow Condensed',sans-serif;font-weight:300;color:rgba(255,255,255,0.25);margin-top:10px;text-transform:uppercase}
+  .hd{font-weight:300;font-size:clamp(12px,1.6vw,15px);color:rgba(255,255,255,0.35);margin-top:20px;text-align:center;max-width:560px;line-height:1.7;opacity:0;animation:r 1s .8s forwards}
+  .hg{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:32px;opacity:0;animation:r 1s 1s forwards}
+  .hv{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;color:#d4af37;text-align:center}
+  .hlb{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.22);text-align:center;margin-top:2px}
+  .hbtns{display:flex;gap:12px;margin-top:36px;opacity:0;animation:r 1s 1.2s forwards}
+  .hb{padding:13px 44px;background:0;border:1px solid rgba(212,175,55,0.35);color:#d4af37;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+  .hb:hover{background:#d4af37;color:#0a0a0a}
+  .hb.pri{background:rgba(212,175,55,0.1);border-color:rgba(212,175,55,0.5)}
+  .back-link{position:fixed;top:16px;left:16px;z-index:25;font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-decoration:none;transition:color .2s}
+  .back-link:hover{color:#d4af37}
+
+  /* HUD */
+  #hud{position:fixed;z-index:5;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .6s}
+  #hud.on{opacity:1}
+  .bar{position:absolute;top:0;left:0;right:0;height:56px;background:linear-gradient(180deg,rgba(6,6,8,.8) 0%,transparent);display:flex;justify-content:space-between;align-items:center;padding:0 22px}
+  .brand{font-family:'Playfair Display',serif;font-weight:700;font-size:13px}
+  .brand span{color:#d4af37}
+  .brand .pfbadge{font-family:'Barlow Condensed';font-weight:400;font-size:9px;letter-spacing:2px;color:rgba(212,175,55,0.45);margin-left:6px;border:1px solid rgba(212,175,55,0.2);padding:2px 6px;border-radius:2px}
+  .brand .typebadge{font-family:'Barlow Condensed';font-weight:400;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);margin-left:6px;border:1px solid rgba(255,255,255,0.1);padding:2px 6px;border-radius:2px}
+  .tinf{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2)}
+
+  #phase{position:absolute;top:62px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;transition:opacity .4s}
+  .ph-name{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#d4af37}
+  .ph-desc{font-family:'Barlow',sans-serif;font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px}
+  #pbar{position:absolute;top:90px;left:50%;transform:translateX(-50%);width:240px;height:2px;background:rgba(255,255,255,0.06);border-radius:2px;pointer-events:none}
+  #pfill{height:100%;background:#d4af37;border-radius:2px;width:0%;transition:width .3s}
+  #vl{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);text-align:center}
+  .vn{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  .vd{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:#d4af37;margin-top:3px;text-transform:uppercase}
+  .nav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:3px;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:98vw}
+  .nb{padding:6px 10px;background:rgba(6,6,8,.55);border:1px solid rgba(212,175,55,.08);color:rgba(255,255,255,.35);font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .nb:hover,.nb.on{background:rgba(212,175,55,.08);border-color:rgba(212,175,55,.3);color:#d4af37}
+  .nb.gold{background:rgba(212,175,55,.15);border-color:#d4af37;color:#d4af37}
+
+  /* Still photo overlay */
+  #still{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;opacity:0;transition:opacity .5s}
+  #still.on{opacity:1}
+  .still-border{position:absolute;top:3%;left:3%;right:3%;bottom:3%;border:1px solid rgba(212,175,55,0.25)}
+  .still-corner{position:absolute;width:20px;height:20px;border-color:#d4af37;border-style:solid}
+  .sc-tl{top:3%;left:3%;border-width:1px 0 0 1px}
+  .sc-tr{top:3%;right:3%;border-width:1px 1px 0 0}
+  .sc-bl{bottom:3%;left:3%;border-width:0 0 1px 1px}
+  .sc-br{bottom:3%;right:3%;border-width:0 1px 1px 0}
+  .still-label{position:absolute;bottom:5%;right:5%;font-family:'Barlow Condensed';font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,175,55,0.5)}
+
+  .cbar{position:absolute;left:0;right:0;height:0;background:#000;transition:height .8s ease;z-index:3}
+  .cbar.top{top:0}.cbar.bot{bottom:0}
+  .cbar.on{height:8%}
+
+  @keyframes r{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:600px){.hg{grid-template-columns:repeat(3,1fr);gap:12px}.nav{gap:2px}.hbtns{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+<a class="back-link" href="index.html">&larr; Back to Home</a>
+<div id="C"></div>
+<div class="cbar top" id="cTop"></div>
+<div class="cbar bot" id="cBot"></div>
+<div id="still"><div class="still-border"></div><div class="still-corner sc-tl"></div><div class="still-corner sc-tr"></div><div class="still-corner sc-bl"></div><div class="still-corner sc-br"></div><div class="still-label">Loudon / DeSarro &middot; Quonset Arch</div></div>
+
+<div id="hero">
+  <div class="hl">Hazel Green &middot; Alabama</div>
+  <h1 class="hn">Loudon / DeSarro
+    <em>Athletic Complex</em>
+    <span class="pfx">Quonset Arch &middot; PLEX FLEX&trade; Retractable Arena</span>
+  </h1>
+  <p class="hd">50,000 square feet of transformable athletic architecture under a dramatic curved shell. The world's first retractable concrete beam system &mdash; 2,500 seats that deploy outward through the east wall.</p>
+  <div class="hg">
+    <div><div class="hv">50K</div><div class="hlb">Square Feet</div></div>
+    <div><div class="hv">2,500</div><div class="hlb">Outdoor Seats</div></div>
+    <div><div class="hv">NCAA</div><div class="hlb">Wrestling</div></div>
+    <div><div class="hv">75 yd</div><div class="hlb">Indoor Turf</div></div>
+    <div><div class="hv">FLEX&trade;</div><div class="hlb">Plex Flex</div></div>
+  </div>
+  <div class="hbtns">
+    <button class="hb pri" onclick="startBuild()">Watch It Built &rarr;</button>
+    <button class="hb" onclick="enterExplore()">Explore Facility</button>
+  </div>
+</div>
+
+<div id="hud">
+  <div class="bar">
+    <div class="brand">Loudon / <span>DeSarro</span><span class="pfbadge">PLEX FLEX&trade;</span><span class="typebadge">QUONSET</span></div>
+    <div class="tinf">Hazel Green, AL &middot; 50,000 SF &middot; 200' &times; 250' &times; 65'</div>
+  </div>
+  <div id="phase"><div class="ph-name" id="PN"></div><div class="ph-desc" id="PD"></div></div>
+  <div id="pbar"><div id="pfill"></div></div>
+  <div id="vl"><div class="vn" id="VN"></div><div class="vd" id="VD"></div></div>
+  <div class="nav" id="navBar"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/facility-core.js"></script>
+<script>
+// ============================================================
+// QUONSET ARCH SHELL — 200' x 250' x 65' peak
+// ============================================================
+FacilityCore.init(document.getElementById('C'), function(scene, M, D) {
+  var FT = D.FT, BW = D.BW, BL = D.BL;
+  var BH = 65 * FT; // 65' peak height
+  var group = new THREE.Group();
+
+  // Steel arch ribs (11 ribs spaced along length)
+  for (var f = 0; f <= 10; f++) {
+    var z = f * BL / 10;
+    var seg = 20;
+    var pts = [];
+    for (var i = 0; i <= seg; i++) {
+      var ang = Math.PI * i / seg;
+      pts.push(new THREE.Vector3(
+        -BW / 2 * Math.cos(ang) + BW / 2,
+        BH * Math.sin(ang),
+        z
+      ));
+    }
+    var curve = new THREE.CatmullRomCurve3(pts);
+    var tube = new THREE.Mesh(new THREE.TubeGeometry(curve, seg, 0.14, 4, false), M.steel);
+    scene.children.forEach(function(c) {
+      // Add to steel group if it exists
+    });
+    group.add(tube);
+  }
+
+  // Shell skin (extruded arch profile)
+  var a = BW / 2, b = BH, shellSeg = 24, t = 0.4;
+  var shape = new THREE.Shape();
+  shape.moveTo(-a, 0);
+  for (var i = 0; i <= shellSeg; i++) {
+    var ang = Math.PI * i / shellSeg;
+    shape.lineTo(-a * Math.cos(ang), b * Math.sin(ang));
+  }
+  shape.lineTo(a, 0);
+
+  var hole = new THREE.Path();
+  var ai = a - t, bi = b - t;
+  hole.moveTo(-ai, 0);
+  for (var j = 0; j <= shellSeg; j++) {
+    var ang2 = Math.PI * j / shellSeg;
+    hole.lineTo(-ai * Math.cos(ang2), bi * Math.sin(ang2));
+  }
+  hole.lineTo(ai, 0);
+  shape.holes.push(hole);
+
+  var shellGeo = new THREE.ExtrudeGeometry(shape, { steps: 1, depth: BL, bevelEnabled: false });
+  var shellMesh = new THREE.Mesh(shellGeo, M.metal);
+  shellMesh.position.set(BW / 2, 0, 0);
+  group.add(shellMesh);
+
+  // Front end cap (glass)
+  var capShape = new THREE.Shape();
+  capShape.moveTo(-a, 0);
+  for (var k = 0; k <= shellSeg; k++) {
+    var ang3 = Math.PI * k / shellSeg;
+    capShape.lineTo(-a * Math.cos(ang3), b * Math.sin(ang3));
+  }
+  capShape.lineTo(a, 0);
+  var capGeo = new THREE.ShapeGeometry(capShape);
+  var frontCap = new THREE.Mesh(capGeo, M.glassFr);
+  frontCap.position.set(BW / 2, 0, 0.05);
+  group.add(frontCap);
+
+  // Back end cap (solid)
+  var backCap = new THREE.Mesh(capGeo.clone(), M.metal);
+  backCap.position.set(BW / 2, 0, BL - 0.05);
+  group.add(backCap);
+
+  return group;
+});
+</script>
+</body>
+</html>

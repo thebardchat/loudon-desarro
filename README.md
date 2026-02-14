@@ -22,17 +22,36 @@ Kids drive hours or they don't go at all.
 
 | Feature | Spec |
 |---------|------|
-| **Total Footprint** | 50,000 SF (200' x 250' Quonset Hangar) |
-| **Wrestling Arena** | 3x NCAA regulation 42'x42' competition mats |
-| **PLEX FLEX™ System** | 2,600 retractable concrete beam seats (inside/outside/split) |
-| **Indoor Turf** | 40-yard marked field — football, soccer, agility |
-| **Strength & Conditioning** | Power racks, Olympic platforms, cable machines |
-| **Glass Garage Doors** | Full east wall opens to outdoor training field |
+| **Total Footprint** | 50,000 SF (200' x 250') |
+| **Building Options** | Quonset arch OR rectangular steel |
+| **Wrestling Arena** | 3x NCAA regulation 42'x42' competition mats (140' x 120') |
+| **PLEX FLEX™ System** | 2,500 retractable concrete beam seats (outward deploy only) |
+| **Indoor Turf** | 75-yard strip along west wall (60' x 225') |
+| **Strength & Conditioning** | Power racks, Olympic platforms, cable machines (140' x 105') |
+| **Glass Garage Doors** | West wall opens to outdoor training field |
+| **Glass Partitions** | Viewing between wrestling/S&C and turf |
 | **Amenities** | Concessions, merch, locker rooms, offices, food truck parking |
+
+### Layout (Option C)
+
+```
+       WEST (Glass Garage Doors)                    EAST (PLEX FLEX →)
+  X=0                                                              X=200'
+  ┌──────────────────────────────────────────────────────────────────┐ Z=0
+  │                    GRAND ENTRANCE (25' deep)                     │
+  ├────────────┬─────────────────────────────────────────────────────┤ Z=25'
+  │   TURF     │           WRESTLING ARENA (140' × 120')             │
+  │  STRIP     │        3× NCAA 42'×42' mats                        │
+  │  60' wide  ├─────────────────────────────────────────────────────┤ Z=145'
+  │  225' long │        STRENGTH & CONDITIONING (140' × 105')        │
+  │  = 75 yds  │         Power racks · Platforms                     │
+  ├────────────┴─────────────────────────────────────────────────────┤ Z=250'
+  └──────────────────────────────────────────────────────────────────┘
+```
 
 ### PLEX FLEX™ — The Innovation
 
-16 rows of retractable concrete beams that deploy 2,600 seats **through the wall**. Full indoor arena. Full outdoor stadium. Or split between both. Nothing like it exists.
+16 rows × 12 sections of retractable concrete beams (20' each) that deploy **outward only** through the east wall. 2,500 seats with stepped rake sightlines. Full 200' interior stays clear at all times. Nothing like it exists.
 
 ---
 
@@ -67,9 +86,18 @@ This repo includes full interactive 3D visualizations — open any HTML file in 
 | File | What It Shows |
 |------|--------------|
 | **[index.html](index.html)** | Investor-facing landing page with market analysis |
-| **[explore.html](explore.html)** | Full 3D walkthrough — drag to orbit, explore every zone |
-| **[plexflex.html](plexflex.html)** | PLEX FLEX™ demo — watch 2,600 seats deploy through the wall |
-| **[floorplan.html](floorplan.html)** | Bird's-eye SVG floor plan with all zones labeled |
+| **[explore-quonset.html](explore-quonset.html)** | Quonset arch 3D — dramatic curved shell, full walkthrough |
+| **[explore-rectangular.html](explore-rectangular.html)** | Rectangular steel 3D — conventional building, same interior |
+| **[plexflex.html](plexflex.html)** | PLEX FLEX™ demo — 20' beams deploy outward, 16×12 grid |
+| **[floorplan.html](floorplan.html)** | Option C SVG floor plan with all zones labeled |
+
+### Shared Code
+
+| File | Purpose |
+|------|---------|
+| **[js/facility-core.js](js/facility-core.js)** | Shared layout, materials, zones, PLEX FLEX, cameras, animation |
+
+Both explore pages load `facility-core.js` and pass their own shell builder function. ~90% shared code.
 
 All demos run locally with zero dependencies (Three.js loaded via CDN for 3D pages).
 
@@ -108,7 +136,7 @@ Interested in investing, sponsoring, or partnering?
 | Component | Technology |
 |-----------|-----------|
 | Landing Page | HTML + CSS (zero dependencies) |
-| 3D Demos | Three.js (CDN) |
+| 3D Demos | Three.js (CDN) + shared facility-core.js |
 | Floor Plan | SVG |
 | Hosting | GitHub Pages |
 
