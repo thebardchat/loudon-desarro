@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floor Plan — Loudon / DeSarro</title>
+<title>Floor Plan — Loudon / DeSarro Athletic Complex</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
@@ -14,7 +14,7 @@
   .top p{font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-top:4px}
   .back{font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);text-decoration:none;display:inline-block;margin-bottom:12px}
   .back:hover{color:#d4af37}
-  .plan{position:relative;width:100%;max-width:900px;margin:0 auto;aspect-ratio:250/320}
+  .plan{position:relative;width:100%;max-width:900px;margin:0 auto}
   svg{width:100%;height:100%}
   .zone{fill-opacity:0.15;stroke-width:1.5;cursor:pointer;transition:fill-opacity .2s}
   .zone:hover{fill-opacity:0.3}
@@ -25,128 +25,22 @@
   .legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:16px;max-width:900px;margin-left:auto;margin-right:auto}
   .leg{display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4)}
   .dot{width:10px;height:10px;border-radius:2px}
+  .subtitle{text-align:center;margin-top:8px;font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.15)}
 </style>
 </head>
 <body>
-  <a class="back" href="index.html">← Back to Home</a>
+  <a class="back" href="index.html">&larr; Back to Home</a>
   <div class="top">
-    <h1>Loudon / <span>DeSarro</span> — Floor Plan</h1>
-    <p>200' × 250' · 50,000 SF · PLEX FLEX™ Arena</p>
+    <h1>Loudon / <span>DeSarro</span> &mdash; Floor Plan</h1>
+    <p>Option C &middot; 200' &times; 250' &middot; 50,000 SF &middot; PLEX FLEX&trade; Outward Deploy</p>
   </div>
+  <div class="subtitle">Turf Strip Along West Wall &middot; Wrestling Center &middot; S&amp;C Flanking</div>
 
   <div class="plan">
-    <svg viewBox="0 0 500 650" xmlns="http://www.w3.org/2000/svg">
-      <!-- Building outline (elliptical ends) -->
-      <path d="M50,100 Q50,40 250,40 Q450,40 450,100 L450,550 Q450,610 250,610 Q50,610 50,550 Z"
-        fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
-
-      <!-- SOUTH END — Grand Entrance -->
-      <rect x="60" y="520" width="380" height="70" rx="4" class="zone" fill="#d4af37" stroke="#d4af37"/>
-      <text x="250" y="548" text-anchor="middle" class="label gold" font-size="10">Grand Entrance</text>
-      
-      <!-- Ticket Sales -->
-      <rect x="70" y="530" width="60" height="28" rx="2" class="zone" fill="#f0c040" stroke="#f0c040"/>
-      <text x="100" y="547" text-anchor="middle" class="label" font-size="7">Tickets</text>
-
-      <!-- Front Concessions -->
-      <rect x="140" y="530" width="80" height="28" rx="2" class="zone" fill="#e08030" stroke="#e08030"/>
-      <text x="180" y="547" text-anchor="middle" class="label" font-size="7">Concessions</text>
-
-      <!-- Merch -->
-      <rect x="230" y="530" width="60" height="28" rx="2" class="zone" fill="#c060c0" stroke="#c060c0"/>
-      <text x="260" y="547" text-anchor="middle" class="label" font-size="7">Merch</text>
-
-      <!-- Bathrooms -->
-      <rect x="300" y="530" width="55" height="28" rx="2" class="zone" fill="#4080c0" stroke="#4080c0"/>
-      <text x="327" y="547" text-anchor="middle" class="label" font-size="7">Restrooms</text>
-
-      <!-- Rear Concessions -->
-      <rect x="365" y="530" width="65" height="28" rx="2" class="zone" fill="#e08030" stroke="#e08030"/>
-      <text x="397" y="547" text-anchor="middle" class="label" font-size="7">Rear Conc.</text>
-
-      <!-- Locker Rooms (backed against interior wall) -->
-      <rect x="70" y="490" width="90" height="30" rx="2" class="zone" fill="#4060a0" stroke="#4060a0"/>
-      <text x="115" y="508" text-anchor="middle" class="label" font-size="7">Men's Locker</text>
-
-      <rect x="170" y="490" width="90" height="30" rx="2" class="zone" fill="#6040a0" stroke="#6040a0"/>
-      <text x="215" y="508" text-anchor="middle" class="label" font-size="7">Women's Locker</text>
-
-      <!-- Small Offices -->
-      <rect x="270" y="490" width="60" height="30" rx="2" class="zone" fill="#806030" stroke="#806030"/>
-      <text x="300" y="508" text-anchor="middle" class="label" font-size="7">Office</text>
-
-      <rect x="340" y="490" width="60" height="30" rx="2" class="zone" fill="#806030" stroke="#806030"/>
-      <text x="370" y="508" text-anchor="middle" class="label" font-size="7">Office</text>
-
-      <!-- WEST SIDE — Turf + S&C (along glass garage doors) -->
-      <!-- Glass Garage Doors indicator -->
-      <line x1="56" y1="120" x2="56" y2="480" stroke="#d4af37" stroke-width="3" stroke-dasharray="8,4"/>
-      <text x="42" y="300" text-anchor="middle" class="label gold" font-size="6" transform="rotate(-90,42,300)">Glass Garage Doors (West Wall)</text>
-
-      <!-- 40-Yard Turf -->
-      <rect x="65" y="160" width="100" height="310" rx="3" class="zone" fill="#2d7a30" stroke="#2d7a30"/>
-      <text x="115" y="290" text-anchor="middle" class="label" font-size="9">40-Yard</text>
-      <text x="115" y="302" text-anchor="middle" class="label" font-size="9">Turf</text>
-      <text x="115" y="318" text-anchor="middle" class="dim">120' × 30'</text>
-      <!-- Yard lines -->
-      <line x1="75" y1="199" x2="155" y2="199" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-      <line x1="75" y1="238" x2="155" y2="238" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-      <line x1="75" y1="277" x2="155" y2="277" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-      <line x1="75" y1="316" x2="155" y2="316" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-      <line x1="75" y1="355" x2="155" y2="355" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-      <line x1="75" y1="394" x2="155" y2="394" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-      <line x1="75" y1="433" x2="155" y2="433" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
-
-      <!-- S&C Zone -->
-      <rect x="170" y="160" width="80" height="310" rx="3" class="zone" fill="#1a1a2e" stroke="#484848"/>
-      <text x="210" y="290" text-anchor="middle" class="label" font-size="8">Strength</text>
-      <text x="210" y="302" text-anchor="middle" class="label" font-size="8">& Cond.</text>
-      <text x="210" y="318" text-anchor="middle" class="dim">Racks · Platforms</text>
-      <text x="210" y="330" text-anchor="middle" class="dim">Ellipticals · Cable</text>
-
-      <!-- EAST SIDE — PLEX FLEX -->
-      <rect x="260" y="120" width="175" height="360" rx="3" class="zone" fill="#8a8a85" stroke="#8a8a85"/>
-      <text x="347" y="280" text-anchor="middle" class="label gold" font-size="11">PLEX FLEX™</text>
-      <text x="347" y="296" text-anchor="middle" class="label" font-size="8">Retractable Beams</text>
-      <text x="347" y="310" text-anchor="middle" class="dim">16 Rows · 2,600 Seats</text>
-      <text x="347" y="324" text-anchor="middle" class="dim">20' Beams Through East Wall</text>
-
-      <!-- Beam direction arrows -->
-      <line x1="435" y1="250" x2="475" y2="250" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
-      <line x1="435" y1="300" x2="475" y2="300" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
-      <line x1="435" y1="350" x2="475" y2="350" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
-      <text x="475" y="388" text-anchor="middle" class="label gold" font-size="6">Beams Deploy</text>
-      <text x="475" y="398" text-anchor="middle" class="label gold" font-size="6">Outside →</text>
-
-      <!-- East wall indicator -->
-      <line x1="444" y1="120" x2="444" y2="480" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-
-      <!-- NORTH END — Wrestling Arena -->
-      <ellipse cx="250" cy="100" rx="180" ry="55" class="zone" fill="#a01020" stroke="#a01020"/>
-      <text x="250" y="90" text-anchor="middle" class="label" font-size="10">NCAA Wrestling Arena</text>
-      <text x="250" y="104" text-anchor="middle" class="dim">3× 42'×42' Competition Mats</text>
-      <!-- Mat circles -->
-      <circle cx="185" cy="95" r="18" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
-      <circle cx="250" cy="80" r="18" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
-      <circle cx="315" cy="95" r="18" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
-
-      <!-- OUTSIDE EAST — Soccer/Football Field -->
-      <rect x="455" y="100" width="40" height="420" rx="3" fill="rgba(26,90,32,0.2)" stroke="rgba(26,90,32,0.3)" stroke-width="1"/>
-      <text x="475" y="200" text-anchor="middle" class="label" font-size="6" transform="rotate(90,475,200)">Outdoor Training Field</text>
-
-      <!-- SOUTH — Parking + Food Trucks -->
-      <rect x="100" y="600" width="300" height="35" rx="3" fill="rgba(42,42,42,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-      <text x="250" y="618" text-anchor="middle" class="label" font-size="7">Parking · 5 Food Truck Spots</text>
-      <!-- Food truck icons -->
-      <rect x="140" y="622" width="15" height="8" rx="1" fill="rgba(212,175,55,0.3)"/>
-      <rect x="165" y="622" width="15" height="8" rx="1" fill="rgba(212,175,55,0.3)"/>
-      <rect x="190" y="622" width="15" height="8" rx="1" fill="rgba(212,175,55,0.3)"/>
-      <rect x="215" y="622" width="15" height="8" rx="1" fill="rgba(212,175,55,0.3)"/>
-      <rect x="240" y="622" width="15" height="8" rx="1" fill="rgba(212,175,55,0.3)"/>
-
-      <!-- Dimensions -->
-      <text x="250" y="25" text-anchor="middle" class="dim" font-size="8">← 200' →</text>
-      <text x="22" y="300" text-anchor="middle" class="dim" font-size="8" transform="rotate(-90,22,300)">← 250' →</text>
+    <!-- viewBox: X maps to building width (200'), Y maps to building length (250')
+         Scale: 1 foot = 2 SVG units. So 200' = 400, 250' = 500.
+         Plus padding for labels and outdoor area. -->
+    <svg viewBox="-40 -40 560 620" xmlns="http://www.w3.org/2000/svg">
 
       <!-- Arrow marker -->
       <defs>
@@ -155,27 +49,217 @@
         </marker>
       </defs>
 
-      <!-- Flow arrows (entrance) -->
-      <path d="M250,590 L250,560" stroke="rgba(212,175,55,0.3)" stroke-width="1" marker-end="url(#arrow)"/>
-      <text x="250" y="586" text-anchor="middle" class="label gold" font-size="6">Enter</text>
+      <!-- Building outline -->
+      <rect x="0" y="0" width="400" height="500" rx="3"
+        fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
 
-      <!-- North label -->
-      <text x="250" y="35" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.15)">NORTH</text>
-      <text x="250" y="645" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.15)">SOUTH (Entrance)</text>
-      <text x="12" y="300" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.15)" transform="rotate(-90,12,300)">WEST (Glass Doors)</text>
-      <text x="490" y="300" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.15)" transform="rotate(90,490,300)">EAST (PLEX FLEX)</text>
+      <!-- ══════════════════════════════════════════════════════
+           GRAND ENTRANCE (Z=0 to Z=25', full width)
+           SVG: Y=0 to Y=50
+           ══════════════════════════════════════════════════════ -->
+      <rect x="2" y="2" width="396" height="48" rx="3"
+        class="zone" fill="#d4af37" stroke="#d4af37"/>
+      <text x="200" y="20" text-anchor="middle" class="label gold" font-size="10">Grand Entrance</text>
+      <text x="200" y="32" text-anchor="middle" class="dim">200' &times; 25' &middot; Lobby &middot; Tickets &middot; Concessions &middot; Lockers &middot; Merch</text>
+
+      <!-- Sub-zones in entrance -->
+      <rect x="10" y="10" width="50" height="30" rx="2" class="zone" fill="#f0c040" stroke="#f0c040"/>
+      <text x="35" y="28" text-anchor="middle" class="label" font-size="6">Tickets</text>
+
+      <rect x="68" y="10" width="65" height="30" rx="2" class="zone" fill="#e08030" stroke="#e08030"/>
+      <text x="100" y="28" text-anchor="middle" class="label" font-size="6">Concessions</text>
+
+      <rect x="141" y="10" width="55" height="30" rx="2" class="zone" fill="#c060c0" stroke="#c060c0"/>
+      <text x="168" y="28" text-anchor="middle" class="label" font-size="6">Merch</text>
+
+      <rect x="204" y="10" width="55" height="30" rx="2" class="zone" fill="#4060a0" stroke="#4060a0"/>
+      <text x="231" y="28" text-anchor="middle" class="label" font-size="6">Lockers M</text>
+
+      <rect x="267" y="10" width="55" height="30" rx="2" class="zone" fill="#6040a0" stroke="#6040a0"/>
+      <text x="294" y="28" text-anchor="middle" class="label" font-size="6">Lockers W</text>
+
+      <rect x="330" y="10" width="60" height="30" rx="2" class="zone" fill="#4080c0" stroke="#4080c0"/>
+      <text x="360" y="28" text-anchor="middle" class="label" font-size="6">Restrooms</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           TURF STRIP (X=0 to X=60', Z=25' to Z=250')
+           SVG: X=0 to X=120, Y=50 to Y=500
+           ══════════════════════════════════════════════════════ -->
+      <rect x="2" y="52" width="118" height="446" rx="3"
+        class="zone" fill="#2d7a30" stroke="#2d7a30"/>
+      <text x="60" y="250" text-anchor="middle" class="label" font-size="10">75-Yard</text>
+      <text x="60" y="265" text-anchor="middle" class="label" font-size="10">Indoor Turf</text>
+      <text x="60" y="282" text-anchor="middle" class="dim">60' &times; 225'</text>
+
+      <!-- Yard lines (every 5 yards = 15' = 30 SVG units, 15 lines) -->
+      <line x1="12" y1="82" x2="110" y2="82" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="112" x2="110" y2="112" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="142" x2="110" y2="142" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="172" x2="110" y2="172" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="202" x2="110" y2="202" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="232" x2="110" y2="232" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="262" x2="110" y2="262" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="292" x2="110" y2="292" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="322" x2="110" y2="322" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="352" x2="110" y2="352" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="382" x2="110" y2="382" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="412" x2="110" y2="412" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="442" x2="110" y2="442" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <line x1="12" y1="472" x2="110" y2="472" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+
+      <!-- ══════════════════════════════════════════════════════
+           WRESTLING ARENA (X=60' to X=200', Z=25' to Z=145')
+           SVG: X=120 to X=400, Y=50 to Y=290
+           ══════════════════════════════════════════════════════ -->
+      <rect x="122" y="52" width="276" height="236" rx="3"
+        class="zone" fill="#a01020" stroke="#a01020"/>
+      <text x="260" y="155" text-anchor="middle" class="label" font-size="11">Wrestling Arena</text>
+      <text x="260" y="172" text-anchor="middle" class="dim">140' &times; 120' &middot; 3&times; NCAA 42'&times;42' Mats</text>
+
+      <!-- 3 competition mats in a row -->
+      <!-- Mat 1: centered at X~77', Z~85' → SVG X~154, Y~170 -->
+      <rect x="134" y="115" width="84" height="84" rx="2"
+        fill="rgba(160,16,32,0.4)" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
+      <circle cx="176" cy="157" r="20" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
+      <circle cx="176" cy="157" r="8" fill="rgba(212,175,55,0.15)" stroke="rgba(212,175,55,0.2)" stroke-width="0.5"/>
+
+      <!-- Mat 2: centered at X~130', Z~85' → SVG X~260, Y~170 -->
+      <rect x="224" y="115" width="84" height="84" rx="2"
+        fill="rgba(160,16,32,0.4)" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
+      <circle cx="266" cy="157" r="20" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
+      <circle cx="266" cy="157" r="8" fill="rgba(212,175,55,0.15)" stroke="rgba(212,175,55,0.2)" stroke-width="0.5"/>
+
+      <!-- Mat 3: centered at X~175', Z~85' → SVG X~350, Y~170 -->
+      <rect x="304" y="115" width="84" height="84" rx="2"
+        fill="rgba(160,16,32,0.4)" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
+      <circle cx="346" cy="157" r="20" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
+      <circle cx="346" cy="157" r="8" fill="rgba(212,175,55,0.15)" stroke="rgba(212,175,55,0.2)" stroke-width="0.5"/>
+
+      <!-- ══════════════════════════════════════════════════════
+           GLASS PARTITION (between wrestling and S&C at Z=145')
+           SVG: Y=290
+           ══════════════════════════════════════════════════════ -->
+      <line x1="122" y1="290" x2="398" y2="290"
+        stroke="rgba(100,180,220,0.4)" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="260" y="284" text-anchor="middle" class="dim" font-size="6" fill="rgba(100,180,220,0.5)">Glass Partition</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           STRENGTH & CONDITIONING (X=60' to X=200', Z=145' to Z=250')
+           SVG: X=120 to X=400, Y=290 to Y=500
+           ══════════════════════════════════════════════════════ -->
+      <rect x="122" y="292" width="276" height="206" rx="3"
+        class="zone" fill="#1a1a2e" stroke="#484848"/>
+      <text x="260" y="380" text-anchor="middle" class="label" font-size="10">Strength &amp; Conditioning</text>
+      <text x="260" y="396" text-anchor="middle" class="dim">140' &times; 105' &middot; Power Racks &middot; Platforms &middot; Cable Machines</text>
+
+      <!-- Equipment icons (racks) -->
+      <rect x="145" y="320" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="165" y="320" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="185" y="320" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="205" y="320" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="225" y="320" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <text x="188" y="340" text-anchor="middle" class="dim" font-size="5">Power Racks</text>
+
+      <rect x="145" y="360" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="165" y="360" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="185" y="360" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="205" y="360" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <rect x="225" y="360" width="12" height="8" rx="1" fill="rgba(72,72,72,0.5)" stroke="rgba(72,72,72,0.3)"/>
+      <text x="188" y="380" text-anchor="middle" class="dim" font-size="5">Olympic Platforms</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           GLASS PARTITION (between turf and wrestling/S&C at X=60')
+           SVG: X=120
+           ══════════════════════════════════════════════════════ -->
+      <line x1="120" y1="52" x2="120" y2="498"
+        stroke="rgba(100,180,220,0.4)" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="126" y="405" class="dim" font-size="6" fill="rgba(100,180,220,0.5)"
+        transform="rotate(90,126,405)">Glass Partition</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           WEST WALL — Glass Garage Doors
+           SVG: X=0
+           ══════════════════════════════════════════════════════ -->
+      <line x1="-3" y1="60" x2="-3" y2="495"
+        stroke="#d4af37" stroke-width="3" stroke-dasharray="10,5"/>
+      <text x="-22" y="275" text-anchor="middle" class="label gold" font-size="7"
+        transform="rotate(-90,-22,275)">Glass Garage Doors (West Wall)</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           EAST WALL — PLEX FLEX Deploy Zone
+           SVG: X=400
+           ══════════════════════════════════════════════════════ -->
+      <line x1="400" y1="0" x2="400" y2="500"
+        stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/>
+
+      <!-- Beam deploy arrows -->
+      <line x1="405" y1="100" x2="460" y2="100" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <line x1="405" y1="175" x2="460" y2="175" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <line x1="405" y1="250" x2="460" y2="250" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <line x1="405" y1="325" x2="460" y2="325" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <line x1="405" y1="400" x2="460" y2="400" stroke="#d4af37" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- Deploy zone (outside) -->
+      <rect x="402" y="10" width="80" height="480" rx="3"
+        fill="rgba(138,138,133,0.08)" stroke="rgba(138,138,133,0.15)" stroke-width="1"/>
+      <text x="442" y="460" text-anchor="middle" class="label gold" font-size="7">PLEX FLEX&trade;</text>
+      <text x="442" y="472" text-anchor="middle" class="label gold" font-size="6">Deploy Zone</text>
+      <text x="442" y="484" text-anchor="middle" class="dim" font-size="5">2,500 Seats</text>
+      <text x="442" y="494" text-anchor="middle" class="dim" font-size="5">Outward Only</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           OUTDOOR FIELD (east of PLEX FLEX)
+           ══════════════════════════════════════════════════════ -->
+      <rect x="486" y="30" width="50" height="440" rx="3"
+        fill="rgba(26,90,32,0.12)" stroke="rgba(26,90,32,0.2)" stroke-width="1"/>
+      <text x="511" y="250" text-anchor="middle" class="label" font-size="6"
+        transform="rotate(90,511,250)">Outdoor Training Field</text>
+
+      <!-- ══════════════════════════════════════════════════════
+           PARKING & FOOD TRUCKS (south of entrance)
+           ══════════════════════════════════════════════════════ -->
+      <rect x="40" y="-32" width="320" height="26" rx="3"
+        fill="rgba(42,42,42,0.25)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <text x="200" y="-16" text-anchor="middle" class="label" font-size="6">Parking &middot; Food Trucks</text>
+
+      <!-- Food truck spots -->
+      <rect x="80" y="-25" width="14" height="8" rx="1" fill="rgba(212,175,55,0.25)"/>
+      <rect x="100" y="-25" width="14" height="8" rx="1" fill="rgba(212,175,55,0.25)"/>
+      <rect x="120" y="-25" width="14" height="8" rx="1" fill="rgba(212,175,55,0.25)"/>
+      <rect x="140" y="-25" width="14" height="8" rx="1" fill="rgba(212,175,55,0.25)"/>
+      <rect x="160" y="-25" width="14" height="8" rx="1" fill="rgba(212,175,55,0.25)"/>
+
+      <!-- ══════════════════════════════════════════════════════
+           DIMENSIONS & LABELS
+           ══════════════════════════════════════════════════════ -->
+      <text x="200" y="-35" text-anchor="middle" class="dim" font-size="8">&larr; 200' &rarr;</text>
+      <text x="-32" y="250" text-anchor="middle" class="dim" font-size="8"
+        transform="rotate(-90,-32,250)">&larr; 250' &rarr;</text>
+
+      <!-- Cardinal directions -->
+      <text x="200" y="515" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.12)">SOUTH (Back Wall)</text>
+      <text x="200" y="-6" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.12)">NORTH (Entrance)</text>
+      <text x="-10" y="250" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.12)"
+        transform="rotate(-90,-10,250)">WEST (Glass Doors)</text>
+      <text x="498" y="250" text-anchor="middle" class="label" font-size="7" fill="rgba(255,255,255,0.12)"
+        transform="rotate(90,498,250)">EAST (PLEX FLEX)</text>
+
+      <!-- Entrance flow arrow -->
+      <path d="M200,-4 L200,8" stroke="rgba(212,175,55,0.3)" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="214" y="5" class="label gold" font-size="5">Enter</text>
+
     </svg>
   </div>
 
   <div class="legend">
+    <div class="leg"><div class="dot" style="background:#d4af37"></div>Grand Entrance</div>
+    <div class="leg"><div class="dot" style="background:#2d7a30"></div>75-Yard Turf</div>
     <div class="leg"><div class="dot" style="background:#a01020"></div>Wrestling Arena</div>
-    <div class="leg"><div class="dot" style="background:#2d7a30"></div>40-Yard Turf</div>
-    <div class="leg"><div class="dot" style="background:#484848"></div>S&C</div>
-    <div class="leg"><div class="dot" style="background:#8a8a85"></div>PLEX FLEX™</div>
-    <div class="leg"><div class="dot" style="background:#d4af37"></div>Entrance / Amenities</div>
+    <div class="leg"><div class="dot" style="background:#484848"></div>S&amp;C</div>
+    <div class="leg"><div class="dot" style="background:#8a8a85"></div>PLEX FLEX&trade;</div>
     <div class="leg"><div class="dot" style="background:#4060a0"></div>Locker Rooms</div>
-    <div class="leg"><div class="dot" style="background:#806030"></div>Offices</div>
     <div class="leg"><div class="dot" style="background:#e08030"></div>Concessions</div>
+    <div class="leg"><div class="dot" style="background:rgba(100,180,220,0.5)"></div>Glass Partitions</div>
   </div>
 </body>
 </html>

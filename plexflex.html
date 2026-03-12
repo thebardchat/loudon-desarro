@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLEX FLEX™ — Telescopic Floor-Lift Beams</title>
+<title>PLEX FLEX&trade; — Telescopic Floor-Lift Beams</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Barlow+Condensed:wght@300;400;600&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
@@ -17,202 +17,326 @@ body{background:#0a0c14;color:#fff;font-family:'Barlow',sans-serif;overflow:hidd
 .title h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:900}
 .title h1 span{color:#d4af37;font-style:italic}
 .title p{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;color:rgba(255,255,255,0.4);margin-top:4px}
+.status{position:fixed;top:75px;left:50%;transform:translateX(-50%);z-index:10;text-align:center;pointer-events:none;transition:opacity .4s}
+.status .label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#d4af37}
+.status .desc{font-family:'Barlow',sans-serif;font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px}
+.back-link{position:fixed;top:16px;left:16px;z-index:15;font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-decoration:none;transition:color .2s}
+.back-link:hover{color:#d4af37}
+.specs{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:24px;pointer-events:none}
+.spec{text-align:center}
+.spec .val{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:#d4af37}
+.spec .lbl{font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-top:2px}
 </style>
 </head>
 <body>
+<a class="back-link" href="index.html">&larr; Back</a>
 <div id="C"></div>
 <div class="title">
-  <h1>PLEX FLEX<span>™</span></h1>
-  <p>Telescopic Floor-Lift · 16 Rows · 2,600 Seats · Safety Interlocks</p>
+  <h1>PLEX FLEX<span>&trade;</span></h1>
+  <p>Telescopic Floor-Lift &middot; 16 Rows &middot; 2,600 Seats &middot; Safety Interlocks</p>
+</div>
+<div class="status" id="status">
+  <div class="label" id="statusLabel">Stowed</div>
+  <div class="desc" id="statusDesc">Beams stowed 24' below slab &mdash; full arena floor clear</div>
+</div>
+<div class="specs">
+  <div class="spec"><div class="val">66'</div><div class="lbl">Vertical Travel</div></div>
+  <div class="spec"><div class="val">16</div><div class="lbl">Rows</div></div>
+  <div class="spec"><div class="val">N &amp; S</div><div class="lbl">Pit Ends</div></div>
+  <div class="spec"><div class="val">2,600</div><div class="lbl">Total Seats</div></div>
 </div>
 <div class="controls">
-  <button class="btn on" onclick="deploy('deployed')">Deploy Seating</button>
-  <button class="btn" onclick="deploy('stowed')">Stow Below Floor</button>
-  <button class="btn" onclick="toggleView()" style="border-left:1px solid rgba(212,175,55,0.3)">Swap Side View</button>
+  <button class="btn on" id="btnStowed" onclick="deploy('stowed')">Stowed</button>
+  <button class="btn" id="btnDeployed" onclick="deploy('deployed')">Deploy Seating</button>
+  <button class="btn" onclick="toggleView()" style="border-left:1px solid rgba(212,175,55,0.3)">Swap View</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const FT = 0.3048;
-const BW = 200*FT, BL = 250*FT, BH = 65*FT;
-const BEAM_H = 4*FT;
-const ROWS = 16;
-const HORIZ_STEP = 4*FT;
+// ============================================================
+// PLEX FLEX™ — Telescopic Floor-Lift Beams
+// 16 rows × 2 ends (N+S) = 32 beam banks, 2,600 seats
+// Beams rise from Z = -24' (stowed) to Z = +42' (deployed)
+// ============================================================
+var FT = 0.3048;
+var BW = 200 * FT, BL = 250 * FT, BH = 65 * FT;
+var BEAM_H = 4 * FT;
+var ROWS = 16;
+var HORIZ_STEP = 4 * FT;
 
 // Telescopic vertical travel
-const STOW_Y  = -24*FT;   // Below floor (stowed)
-const DEPLOY_Y =  42*FT;   // Above floor (fully deployed)
-const PIT_DEPTH = 26*FT;   // Pit depth below grade
-const PIT_W = 12*FT;       // Pit width (N-S per end)
-const BEAM_SPAN = 76*FT;   // Beam span (East-West across mat area)
+var STOW_Y  = -24 * FT;   // Below floor (stowed)
+var DEPLOY_Y =  42 * FT;   // Above floor (fully deployed)
+var PIT_DEPTH = 26 * FT;   // Pit depth below grade
+var PIT_W = 12 * FT;       // Pit width (N-S per end)
+var BEAM_SPAN = 76 * FT;   // Beam span (East-West across mat area)
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
+// Renderer
+var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
-document.body.appendChild(renderer.domElement);
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0e14);
-const cam = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 500);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.getElementById('C').appendChild(renderer.domElement);
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-sun.position.set(50, 80, 50);
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+var cam = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
+
+// Lights
+scene.add(new THREE.AmbientLight(0x506080, 0.5));
+scene.add(new THREE.HemisphereLight(0x8ecae6, 0x2a1f0a, 0.4));
+var sun = new THREE.DirectionalLight(0xfff0d0, 1.2);
+sun.position.set(60, 80, 40);
 scene.add(sun);
 
 // Materials
-const matConcrete = new THREE.MeshStandardMaterial({color:0xd4cfc4});
-const matSeat     = new THREE.MeshStandardMaterial({color:0x3a3a4a});
-const matFloor    = new THREE.MeshStandardMaterial({color:0x8b1a1a});
-const matPit      = new THREE.MeshStandardMaterial({color:0x2a2a2a});
-const matFlap     = new THREE.MeshStandardMaterial({color:0x888880});
-const matWall     = new THREE.MeshStandardMaterial({color:0x4a4a52, side:THREE.DoubleSide, transparent:true, opacity:0.25});
+var matConcrete = new THREE.MeshLambertMaterial({ color: 0x8a8a85 });
+var matSeat = new THREE.MeshLambertMaterial({ color: 0x9a9a95 });
+var matFloor = new THREE.MeshLambertMaterial({ color: 0x1a1a1e });
+var matPit = new THREE.MeshLambertMaterial({ color: 0x151518 });
+var matFlap = new THREE.MeshLambertMaterial({ color: 0x666660 });
+var matSteel = new THREE.MeshLambertMaterial({ color: 0x484848 });
+var matMat = new THREE.MeshLambertMaterial({ color: 0xa01020 });
+var matTurf = new THREE.MeshLambertMaterial({ color: 0x2d7a30 });
 
-// Arena floor
-const arenaFloor = new THREE.Mesh(new THREE.BoxGeometry(BW, 0.15, BL), matFloor);
-arenaFloor.position.y = -0.075;
-scene.add(arenaFloor);
+// Environment — Indoor floor
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(BW, 0.1, BL),
+  matFloor
+)).position.set(BW / 2, -0.05, BL / 2);
 
-// Building walls (transparent outline)
-const wallGeo = new THREE.BoxGeometry(BW, BH, BL);
-const wallEdges = new THREE.EdgesGeometry(wallGeo);
-const wallLines = new THREE.LineSegments(wallEdges, new THREE.LineBasicMaterial({color:0x4a4a52, transparent:true, opacity:0.3}));
-wallLines.position.y = BH/2;
+// Building shell (transparent wireframe)
+var wallGeo = new THREE.BoxGeometry(BW, BH, BL);
+var wallEdges = new THREE.EdgesGeometry(wallGeo);
+var wallLines = new THREE.LineSegments(wallEdges, new THREE.LineBasicMaterial({ color: 0x4a4a52, transparent: true, opacity: 0.3 }));
+wallLines.position.set(BW / 2, BH / 2, BL / 2);
 scene.add(wallLines);
 
-// North & South pits (visible cavities below the floor)
-for(const side of [1, -1]) {
-    const pitZ = side * (BL/2 - PIT_W/2);
-    const pit = new THREE.Mesh(new THREE.BoxGeometry(BEAM_SPAN, PIT_DEPTH, PIT_W), matPit);
-    pit.position.set(0, -PIT_DEPTH/2, pitZ);
-    scene.add(pit);
+// Building corner columns
+for (var corner = 0; corner < 4; corner++) {
+  var cx = corner < 2 ? 0 : BW;
+  var cz2 = corner % 2 === 0 ? 0 : BL;
+  scene.add(new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, BH, 0.2),
+    matSteel
+  )).position.set(cx, BH / 2, cz2);
 }
 
-// Beams array for animation
-const beams = [];
-const safetyFlaps = [];
+// Wrestling mat (reference, centered)
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(42 * FT, 0.04, 42 * FT),
+  matMat
+)).position.set(BW / 2, 0.02, BL * 0.35);
+
+// Turf strip (reference)
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(55 * FT, 0.03, 180 * FT),
+  matTurf
+)).position.set(28 * FT, 0.015, BL * 0.55);
+
+// North & South pits (visible cavities below the floor)
+for (var side = 0; side < 2; side++) {
+  var pitSign = side === 0 ? 1 : -1;
+  var pitZ = BL / 2 + pitSign * (BL / 2 - PIT_W / 2);
+  var pit = new THREE.Mesh(new THREE.BoxGeometry(BEAM_SPAN, PIT_DEPTH, PIT_W), matPit);
+  pit.position.set(BW / 2, -PIT_DEPTH / 2, pitZ);
+  scene.add(pit);
+}
+
+// ── BEAMS (telescopic vertical) ─────────────────────────────
+var beams = [];
+var safetyFlaps = [];
 
 function createTelescopicSection(zBase, stepDir) {
-    for(let r = 0; r < ROWS; r++) {
-        // Rake: each row is 4' higher than the previous
-        const rowElevation = r * BEAM_H;
-        // Horizontal stagger: top rows furthest from center, lower rows step forward
-        const zOffset = (ROWS - 1 - r) * HORIZ_STEP * stepDir;
-        const z = zBase - zOffset;
+  for (var r = 0; r < ROWS; r++) {
+    var rowElevation = r * BEAM_H;
+    // Horizontal stagger: top rows furthest from center, lower rows step forward
+    var zOffset = (ROWS - 1 - r) * HORIZ_STEP * stepDir;
+    var z = zBase - zOffset;
 
-        const beamGeo = new THREE.BoxGeometry(BEAM_SPAN, BEAM_H * 0.9, BEAM_SPAN / ROWS);
-        const seatGeo = new THREE.BoxGeometry(BEAM_SPAN * 0.95, 0.1, BEAM_SPAN / ROWS * 0.85);
+    var beamGeo = new THREE.BoxGeometry(BEAM_SPAN, BEAM_H * 0.9, BEAM_SPAN / ROWS);
+    var seatGeo = new THREE.BoxGeometry(BEAM_SPAN * 0.95, 0.06, BEAM_SPAN / ROWS * 0.85);
 
-        const beam = new THREE.Mesh(beamGeo, matConcrete);
-        const seat = new THREE.Mesh(seatGeo, matSeat);
+    var beam = new THREE.Mesh(beamGeo, matConcrete);
+    var seat = new THREE.Mesh(seatGeo, matSeat);
 
-        // Stowed position: below floor
-        const stowedY = STOW_Y + rowElevation;
-        beam.position.set(0, stowedY, z);
-        seat.position.set(0, stowedY + BEAM_H * 0.45, z);
-        scene.add(beam);
-        scene.add(seat);
+    // Stowed position: below floor
+    var stowedY = STOW_Y + rowElevation;
+    beam.position.set(BW / 2, stowedY, z);
+    seat.position.set(BW / 2, stowedY + BEAM_H * 0.45, z);
+    scene.add(beam);
+    scene.add(seat);
 
-        // Deployed Y: rises so row 0 is at floor level, row 15 is at top
-        const deployedY = rowElevation + BEAM_H / 2;
+    // Deployed Y: rises so row 0 is at floor level, row 15 is at top
+    var deployedY = rowElevation + BEAM_H / 2;
 
-        beams.push({
-            row: r,
-            mesh: beam,
-            seatMesh: seat,
-            stowedY: stowedY,
-            deployedY: deployedY,
-            z: z,
-            startY: stowedY,
-            targetY: stowedY
-        });
-    }
+    beams.push({
+      row: r,
+      mesh: beam,
+      seatMesh: seat,
+      stowedY: stowedY,
+      deployedY: deployedY,
+      z: z,
+      startY: stowedY,
+      targetY: stowedY
+    });
+  }
 
-    // Safety flap for this end (covers the pit opening)
-    const flapZ = zBase - ((ROWS - 1) * HORIZ_STEP * stepDir) / 2;
-    const flap = new THREE.Mesh(
-        new THREE.BoxGeometry(BEAM_SPAN, 0.1, PIT_W * 1.2),
-        matFlap
-    );
-    flap.position.set(0, 0.05, zBase);
-    scene.add(flap);
-    safetyFlaps.push({ mesh: flap, openY: -PIT_DEPTH + 0.5, closedY: 0.05, startY: 0.05, targetY: 0.05 });
+  // Safety flap for this end (covers the pit opening)
+  var flap = new THREE.Mesh(
+    new THREE.BoxGeometry(BEAM_SPAN, 0.1, PIT_W * 1.2),
+    matFlap
+  );
+  flap.position.set(BW / 2, 0.05, zBase);
+  scene.add(flap);
+  safetyFlaps.push({ mesh: flap, openY: -PIT_DEPTH + 0.5, closedY: 0.05, startY: 0.05, targetY: 0.05 });
 }
 
-// North section: top row is furthest north (+Z)
-createTelescopicSection(BL/2 - 20*FT, 1);
-// South section: top row is furthest south (-Z)
-createTelescopicSection(-BL/2 + 20*FT, -1);
+// North section: top row furthest north (+Z)
+createTelescopicSection(BL - 20 * FT, 1);
+// South section: top row furthest south (-Z)
+createTelescopicSection(20 * FT, -1);
 
+// ── BEAM TARGETS (vertical) ─────────────────────────────────
 function setTargets(mode) {
-    beams.forEach(b => {
-        if(mode === 'deployed') {
-            b.targetY = b.deployedY;
-        } else {
-            b.targetY = b.stowedY;
-        }
-    });
-    safetyFlaps.forEach(f => {
-        // Flaps open (drop into pit) when deployed, close flush with floor when stowed
-        f.targetY = (mode === 'deployed') ? f.openY : f.closedY;
-    });
+  beams.forEach(function (b) {
+    if (mode === 'deployed') {
+      b.targetY = b.deployedY;
+    } else {
+      b.targetY = b.stowedY;
+    }
+  });
+  safetyFlaps.forEach(function (f) {
+    // Flaps drop into pit when deployed, close flush with floor when stowed
+    f.targetY = (mode === 'deployed') ? f.openY : f.closedY;
+  });
 }
 
+// ── ANIMATE ──────────────────────────────────────────────────
 function animateBeams(mode) {
-    beams.forEach(b => b.startY = b.mesh.position.y);
-    safetyFlaps.forEach(f => f.startY = f.mesh.position.y);
-    setTargets(mode);
-    const startTime = performance.now();
-    function update() {
-        const t = Math.min((performance.now() - startTime) / 2500, 1);
-        const eased = 1 - Math.pow(1 - t, 3);
-        beams.forEach(b => {
-            const y = b.startY + (b.targetY - b.startY) * eased;
-            b.mesh.position.y = y;
-            b.seatMesh.position.y = y + BEAM_H * 0.45;
-        });
-        safetyFlaps.forEach(f => {
-            f.mesh.position.y = f.startY + (f.targetY - f.startY) * eased;
-        });
-        if(t < 1) requestAnimationFrame(update);
+  beams.forEach(function (b) { b.startY = b.mesh.position.y; });
+  safetyFlaps.forEach(function (f) { f.startY = f.mesh.position.y; });
+  setTargets(mode);
+  var startTime = performance.now();
+  var dur = 3000;
+
+  // Update status
+  var label = document.getElementById('statusLabel');
+  var desc = document.getElementById('statusDesc');
+  if (mode === 'deployed') {
+    label.textContent = 'Deploying';
+    desc.textContent = '2,600 seats rising from below-grade pits (N & S ends)';
+  } else {
+    label.textContent = 'Stowing';
+    desc.textContent = 'Beams descending 24\' below slab — safety flaps closing';
+  }
+
+  function update() {
+    var t = Math.min((performance.now() - startTime) / dur, 1);
+    var eased = 1 - Math.pow(1 - t, 3);
+    beams.forEach(function (b) {
+      var rowDelay = b.row * 0.02;
+      var rt = Math.max(0, Math.min((t - rowDelay) / (1 - rowDelay), 1));
+      var re = 1 - Math.pow(1 - rt, 2.8);
+      var y = b.startY + (b.targetY - b.startY) * re;
+      b.mesh.position.y = y;
+      b.seatMesh.position.y = y + BEAM_H * 0.45;
+    });
+    safetyFlaps.forEach(function (f) {
+      f.mesh.position.y = f.startY + (f.targetY - f.startY) * eased;
+    });
+    if (t < 1) {
+      requestAnimationFrame(update);
+    } else {
+      beams.forEach(function (b) {
+        b.mesh.position.y = b.targetY;
+        b.seatMesh.position.y = b.targetY + BEAM_H * 0.45;
+      });
+      safetyFlaps.forEach(function (f) { f.mesh.position.y = f.targetY; });
+      if (mode === 'deployed') {
+        label.textContent = 'Deployed';
+        desc.textContent = 'Full arena seating — 2,600 seats with stepped rake sightlines';
+      } else {
+        label.textContent = 'Stowed';
+        desc.textContent = 'Beams stowed 24\' below slab — full arena floor clear';
+      }
     }
-    update();
+  }
+  update();
 }
 
 function deploy(mode) {
-    animateBeams(mode);
-    document.querySelectorAll('.btn').forEach(b => b.classList.remove('on'));
-    event.target.classList.add('on');
+  animateBeams(mode);
+  document.getElementById('btnStowed').classList.toggle('on', mode === 'stowed');
+  document.getElementById('btnDeployed').classList.toggle('on', mode === 'deployed');
 }
 
-// DUAL-VIEW CAMERA
-let currentSide = 'front';
-let tPos  = new THREE.Vector3(0, 35, BL/2 + 20);
-let tLook = new THREE.Vector3(0, 10, 0);
+// ── CAMERA ───────────────────────────────────────────────────
+var currentSide = 'front';
+var tPos = new THREE.Vector3(BW / 2, 35, BL + 15);
+var tLook = new THREE.Vector3(BW / 2, ROWS * BEAM_H * 0.3, BL / 2);
 
 function toggleView() {
-    if(currentSide === 'front') {
-        tPos.set(BW/2 + 20, 45, 0);
-        currentSide = 'side';
-    } else {
-        tPos.set(0, 35, BL/2 + 20);
-        currentSide = 'front';
-    }
+  if (currentSide === 'front') {
+    tPos.set(BW + 20, 45, BL / 2);
+    tLook.set(BW / 2, ROWS * BEAM_H * 0.3, BL / 2);
+    currentSide = 'side';
+  } else {
+    tPos.set(BW / 2, 35, BL + 15);
+    tLook.set(BW / 2, ROWS * BEAM_H * 0.3, BL / 2);
+    currentSide = 'front';
+  }
 }
 
-function render() {
-    requestAnimationFrame(render);
-    cam.position.lerp(tPos, 0.05);
-    cam.lookAt(tLook);
-    renderer.render(scene, cam);
-}
-
-// Start deployed
-setTargets('deployed');
-beams.forEach(b => {
-    b.mesh.position.y = b.targetY;
-    b.seatMesh.position.y = b.targetY + BEAM_H * 0.45;
+// Mouse orbit
+var orbT = 0, orbP = 0, mouseDown = false, lastM = { x: 0, y: 0 };
+renderer.domElement.addEventListener('mousedown', function (e) { mouseDown = true; lastM = { x: e.clientX, y: e.clientY }; });
+renderer.domElement.addEventListener('mousemove', function (e) {
+  if (!mouseDown) return;
+  orbT += (e.clientX - lastM.x) * 0.003;
+  orbP = Math.max(-0.4, Math.min(0.4, orbP + (e.clientY - lastM.y) * 0.003));
+  lastM = { x: e.clientX, y: e.clientY };
 });
-safetyFlaps.forEach(f => { f.mesh.position.y = f.targetY; });
+renderer.domElement.addEventListener('mouseup', function () { mouseDown = false; });
+renderer.domElement.addEventListener('wheel', function (e) {
+  var d = cam.position.clone().sub(tLook).normalize();
+  tPos.add(d.multiplyScalar(e.deltaY * 0.015));
+});
+
+// ── RENDER ───────────────────────────────────────────────────
+function render() {
+  requestAnimationFrame(render);
+
+  var fp = tPos.clone();
+  if (orbT || orbP) {
+    var off = cam.position.clone().sub(tLook);
+    var r = off.length();
+    var th = Math.atan2(off.x, off.z) + orbT;
+    var ph = Math.max(0.1, Math.min(1.4, Math.acos(off.y / r) + orbP));
+    fp.set(
+      tLook.x + r * Math.sin(ph) * Math.sin(th),
+      tLook.y + r * Math.cos(ph),
+      tLook.z + r * Math.sin(ph) * Math.cos(th)
+    );
+  }
+  cam.position.lerp(fp, 0.05);
+  cam.lookAt(tLook);
+  orbT *= 0.92;
+  orbP *= 0.92;
+  renderer.render(scene, cam);
+}
+
+// Start stowed
+setTargets('stowed');
+beams.forEach(function (b) { b.mesh.position.y = b.targetY; b.seatMesh.position.y = b.targetY + BEAM_H * 0.45; });
+safetyFlaps.forEach(function (f) { f.mesh.position.y = f.targetY; });
 render();
+
+addEventListener('resize', function () {
+  cam.aspect = innerWidth / innerHeight;
+  cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 </script>
 </body>
 </html>
