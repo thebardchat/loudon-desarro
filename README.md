@@ -6,6 +6,8 @@
 > **50,000 SF multi-sport athletic complex** honoring two wrestling legends.
 > Filling the gap between Birmingham and Nashville. Hazel Green, Alabama.
 
+This project operates under the [ShaneTheBrain Constitution](https://github.com/thebardchat/constitution/blob/main/CONSTITUTION.md).
+
 ---
 
 ## The Problem
@@ -139,6 +141,34 @@ Interested in investing, sponsoring, or partnering?
 | 3D Demos | Three.js (CDN) + shared facility-core.js |
 | Floor Plan | SVG |
 | Hosting | GitHub Pages |
+
+---
+
+## Infrastructure
+
+All `thebardchat` repositories run on local-first hardware:
+
+| Component | Detail |
+|-----------|--------|
+| **Compute** | Raspberry Pi 5 (16 GB RAM) |
+| **Chassis** | Pironman 5-MAX by Sunfounder (NVMe RAID) |
+| **Storage** | 2x WD Blue SN5000 2 TB NVMe — RAID 1 via mdadm |
+| **Core path** | `/mnt/shanebrain-raid/shanebrain-core/` |
+| **Dev environment** | Claude Code on Pi 5 |
+
+> Pi before cloud. Privacy before convenience. — Pillar 4
+
+---
+
+## Credits
+
+Built with Claude (Anthropic) · Runs on Raspberry Pi 5 + Pironman 5-MAX
+
+| Partner | Role |
+|---------|------|
+| **Claude by Anthropic** · [claude.ai](https://claude.ai) | Co-built this entire ecosystem |
+| **Raspberry Pi 5** · [raspberrypi.com](https://www.raspberrypi.com) | Local compute backbone |
+| **Pironman 5-MAX** · [pironman.com](https://www.pironman.com) | NVMe RAID 1 chassis that made it real |
 
 ---
 

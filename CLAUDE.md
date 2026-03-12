@@ -1,7 +1,7 @@
 # CLAUDE.md - Loudon/DeSarro Athletic Complex
 
-> **Last Updated:** February 14, 2026
-> **Version:** 1.0
+> **Last Updated:** March 12, 2026
+> **Version:** 1.1
 > **Owner:** Shane Brazelton (SRM Dispatch, Alabama)
 > **Repo:** github.com/thebardchat/loudon-desarro
 
@@ -12,6 +12,24 @@
 Interactive 3D visualizations and investor-facing landing page for the **Loudon/DeSarro Athletic Complex** — a proposed 50,000 SF multi-sport facility in Hazel Green, Alabama. Named for Coach Loudon (in memory) and Coach DeSarro (in honor), two wrestling legends.
 
 **Tech:** HTML + CSS + Three.js (CDN). Zero build tools. Open any HTML file in a browser.
+
+This project operates under the [ShaneTheBrain Constitution](https://github.com/thebardchat/constitution/blob/main/CONSTITUTION.md).
+
+---
+
+## Infrastructure
+
+All `thebardchat` repositories run on the following local-first infrastructure:
+
+| Component | Detail |
+|-----------|--------|
+| **Compute** | Raspberry Pi 5 (16 GB RAM) |
+| **Chassis** | Pironman 5-MAX by Sunfounder (NVMe RAID) |
+| **Storage** | 2x WD Blue SN5000 2 TB NVMe — RAID 1 via mdadm |
+| **Core path** | `/mnt/shanebrain-raid/shanebrain-core/` |
+| **Dev environment** | Claude Code on Pi 5 |
+
+> Pi before cloud. Privacy before convenience. — Pillar 4
 
 ---
 
@@ -126,6 +144,18 @@ Verify:
 
 - **Coach Loudon** — Head wrestling coach at Hazel Green HS. Lost to a heart attack. His name goes on the front door.
 - **Coach DeSarro** — Retired head coach at Grissom HS. One of the winningest wrestling coaches in Alabama history. Coached Coach Loudon. Coached Shane.
+
+---
+
+## Credits
+
+Built with Claude (Anthropic) · Runs on Raspberry Pi 5 + Pironman 5-MAX
+
+| Partner | Role |
+|---------|------|
+| **Claude by Anthropic** · [claude.ai](https://claude.ai) | Co-built this entire ecosystem |
+| **Raspberry Pi 5** · [raspberrypi.com](https://www.raspberrypi.com) | Local compute backbone |
+| **Pironman 5-MAX** · [pironman.com](https://www.pironman.com) | NVMe RAID 1 chassis that made it real |
 
 ---
 
