@@ -165,3 +165,8 @@ Built with Claude (Anthropic) · Runs on Raspberry Pi 5 + Pironman 5-MAX
 **Email:** shanebrain@theangel.cloud
 **Ko-fi:** ko-fi.com/shanebrain
 **Discord:** discord.gg/xbHQZkggU7
+
+## Claude Code Rules
+- Commit and push directly to `main`. Do NOT create branches.
+- Run build/test commands before committing.
+- Update CLAUDE.md session log before final commit.
